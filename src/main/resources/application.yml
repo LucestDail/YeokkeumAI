@@ -1,0 +1,45 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: yeokkeumai
+  # eGovFrame 5.0 AI layer — Spring AI(OpenAI 호환). base-url 로 OpenRouter/사내/국산 게이트웨이 연결.
+  ai:
+    openai:
+      base-url: ${LLM_BASE_URL:https://openrouter.ai/api/v1}
+      api-key: ${LLM_API_KEY:sk-noop}
+      chat:
+        options:
+          model: ${LLM_MODEL:deepseek/deepseek-chat}
+  datasource:
+    url: ${DB_URL:jdbc:h2:mem:ieum;DB_CLOSE_DELAY=-1}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+
+# 엮음AI 설정 (벤더무관 게이트웨이 / RBAC secure-by-default / RAG)
+ieum:
+  llm:
+    provider: ${LLM_PROVIDER:auto}          # auto | openai_compat | stub
+    base-url: ${LLM_BASE_URL:https://openrouter.ai/api/v1}
+    api-key: ${LLM_API_KEY:}
+    model: ${LLM_MODEL:deepseek/deepseek-chat}
+    timeout-seconds: ${LLM_TIMEOUT_SECONDS:120}
+  auth:
+    admin-token: ${ADMIN_TOKEN:}
+    user-token: ${USER_TOKEN:}
+    insecure-open-mode: ${INSECURE_OPEN_MODE:false}
+  rag:
+    chunk-chars: ${RAG_CHUNK_CHARS:1200}
+    top-k: ${RAG_TOP_K:5}
+
+logging:
+  level:
+    root: INFO

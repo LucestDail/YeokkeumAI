@@ -1,0 +1,62 @@
+"""최소 웹 콘솔(단일 페이지). 접근성 기본(lang=ko·label·대비). Phase1에서 Vue3+KWCAG2.2로 대체."""
+
+INDEX_HTML = """<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이음 AI 콘솔</title>
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:#0b0f1a;color:#e6edf3}
+ header{padding:14px 18px;background:#111725;border-bottom:1px solid #232b3a;font-weight:700}
+ main{max-width:900px;margin:0 auto;padding:18px;display:grid;gap:18px}
+ section{background:#141b28;border:1px solid #232b3a;border-radius:10px;padding:14px}
+ h2{font-size:15px;margin:0 0 10px}
+ textarea,input{width:100%;box-sizing:border-box;background:#0d1117;color:#e6edf3;border:1px solid #2b3648;border-radius:8px;padding:9px}
+ button{background:#2f6feb;color:#fff;border:0;border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer}
+ .out{white-space:pre-wrap;background:#0d1117;border:1px solid #2b3648;border-radius:8px;padding:10px;margin-top:8px;min-height:44px}
+ .cite{font-size:12px;color:#8aa0c0;margin-top:6px}
+ label{display:block;font-size:13px;color:#a9b6cc;margin:6px 0 3px}
+ .row{display:flex;gap:8px;align-items:flex-start}
+ input#token{max-width:280px}
+</style></head><body>
+<header>🔗 이음 AI 콘솔 <span style="font-weight:400;color:#8aa0c0;font-size:13px">— 공공 업무보조(온프렘·게이트웨이·RAG·감사)</span></header>
+<main>
+ <section><label for="token">API 토큰(선택, 인증 시)</label>
+  <input id="token" placeholder="Bearer 토큰 (없으면 open 모드)"></section>
+
+ <section aria-label="채팅"><h2>💬 채팅</h2>
+  <label for="msg">메시지</label>
+  <textarea id="msg" rows="2" placeholder="무엇이든 물어보세요"></textarea>
+  <div class="row" style="margin-top:8px"><button onclick="chat()">보내기</button></div>
+  <div class="out" id="chatOut" role="status" aria-live="polite"></div></section>
+
+ <section aria-label="문서 등록"><h2>📄 문서 등록(RAG 색인)</h2>
+  <label for="fn">파일명</label><input id="fn" placeholder="예: 조달지침.txt">
+  <label for="doc">내용(텍스트)</label><textarea id="doc" rows="4" placeholder="문서 텍스트를 붙여넣기"></textarea>
+  <div class="row" style="margin-top:8px"><button onclick="ingest()">색인</button></div>
+  <div class="out" id="ingOut" role="status" aria-live="polite"></div></section>
+
+ <section aria-label="근거 검색"><h2>🔎 근거기반 질의(RAG)</h2>
+  <label for="q">질문</label><input id="q" placeholder="등록한 문서에 근거해 질문">
+  <div class="row" style="margin-top:8px"><button onclick="rag()">질의</button></div>
+  <div class="out" id="ragOut" role="status" aria-live="polite"></div>
+  <div class="cite" id="ragCite"></div></section>
+</main>
+<script>
+function hdr(){const t=document.getElementById('token').value.trim();
+  const h={'Content-Type':'application/json'}; if(t)h['Authorization']='Bearer '+t; return h;}
+async function chat(){const o=document.getElementById('chatOut');o.textContent='';
+  const r=await fetch('/api/chat',{method:'POST',headers:hdr(),
+    body:JSON.stringify({message:document.getElementById('msg').value,stream:true})});
+  if(!r.ok){o.textContent='오류 '+r.status;return;}
+  const rd=r.body.getReader(),dec=new TextDecoder();
+  for(;;){const {done,value}=await rd.read(); if(done)break;
+    dec.decode(value).split('\\n').forEach(line=>{ if(line.startsWith('data:')){
+      const d=line.slice(5).trim(); if(d&&d!=='[DONE]'){try{o.textContent+=JSON.parse(d).t||'';}catch(e){}}}});}}
+async function ingest(){const r=await fetch('/api/docs',{method:'POST',headers:hdr(),
+    body:JSON.stringify({filename:document.getElementById('fn').value,text:document.getElementById('doc').value})});
+  document.getElementById('ingOut').textContent=r.ok?('색인 완료: '+JSON.stringify(await r.json())):('오류 '+r.status);}
+async function rag(){const r=await fetch('/api/rag/query',{method:'POST',headers:hdr(),
+    body:JSON.stringify({query:document.getElementById('q').value})});
+  if(!r.ok){document.getElementById('ragOut').textContent='오류 '+r.status;return;}
+  const j=await r.json(); document.getElementById('ragOut').textContent=j.answer;
+  document.getElementById('ragCite').textContent=(j.citations||[]).map(c=>`· ${c.filename} #${c.idx} (${c.score})`).join('\\n');}
+</script></body></html>"""

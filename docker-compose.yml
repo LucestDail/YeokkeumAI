@@ -1,0 +1,25 @@
+services:
+  ieum:
+    build: .
+    container_name: yeokkeumai
+    ports:
+      - "${PUBLIC_HTTP_PORT:-8088}:8080"
+    environment:
+      LLM_PROVIDER: ${LLM_PROVIDER:-auto}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://openrouter.ai/api/v1}
+      LLM_MODEL: ${LLM_MODEL:-deepseek/deepseek-chat}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      USER_TOKEN: ${USER_TOKEN:-}
+      INSECURE_OPEN_MODE: ${INSECURE_OPEN_MODE:-false}
+      # 기본 H2 인메모리. 온프렘 영속은 PostgreSQL 권장:
+      # DB_URL: jdbc:postgresql://db:5432/ieum
+      # DB_USER: ieum
+      # DB_PASSWORD: ...
+      DB_URL: ${DB_URL:-jdbc:h2:mem:ieum;DB_CLOSE_DELAY=-1}
+  # db:  # 온프렘 영속 시 주석 해제
+  #   image: postgres:16
+  #   environment: { POSTGRES_DB: ieum, POSTGRES_USER: ieum, POSTGRES_PASSWORD: change-me }
+  #   volumes: [ ieum_pg:/var/lib/postgresql/data ]
+# volumes:
+#   ieum_pg:

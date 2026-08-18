@@ -1,0 +1,13 @@
+ieum:
+  llm:
+    provider: stub
+  auth:
+    admin-token: adm
+    user-token: usr
+    insecure-open-mode: false
+spring:
+  datasource:
+    url: jdbc:h2:mem:ieumtest;DB_CLOSE_DELAY=-1
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
