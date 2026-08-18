@@ -35,10 +35,11 @@ watch(token, (t) => setToken(t))
         <strong>엮음AI</strong>
         <span>공공기관 업무보조 AI · 통제·책임성·연계</span>
       </div>
-      <nav class="nav" aria-label="주요 기능">
+      <nav class="appnav" aria-label="주요 기능">
         <button
           v-for="t in tabs"
           :key="t.key"
+          type="button"
           :aria-current="active === t.key ? 'page' : undefined"
           @click="active = t.key"
         >{{ t.label }}</button>
@@ -48,8 +49,8 @@ watch(token, (t) => setToken(t))
 
   <div class="tokenbar">
     <div class="container">
-      <label for="token">API 토큰</label>
-      <input id="token" type="password" v-model="token"
+      <label for="token" class="tokenbar-label">API 토큰</label>
+      <input id="token" type="password" class="krds-input" v-model="token"
         placeholder="Bearer 토큰 (secure-by-default: 미설정 시 API 차단)" autocomplete="off" />
       <span class="muted">브라우저에만 저장됩니다</span>
     </div>
@@ -63,7 +64,7 @@ watch(token, (t) => setToken(t))
 
   <footer class="footer">
     <div class="container">
-      엮음AI — 온프렘/내부망 벤더무관 AI 게이트웨이 · KRDS 디자인시스템 기반 ·
+      엮음AI — 온프렘/내부망 벤더무관 AI 게이트웨이 · 공식 KRDS 디자인시스템 기반 ·
       <a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS</a> ·
       웹접근성(KWCAG 2.2) 준수 지향
     </div>

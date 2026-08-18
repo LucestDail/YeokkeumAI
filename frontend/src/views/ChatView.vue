@@ -25,18 +25,28 @@ function send() {
   <section class="card" aria-labelledby="chat-h">
     <h2 id="chat-h">대화</h2>
     <p class="desc">벤더무관 게이트웨이를 통한 대화. 응답은 SSE로 실시간 스트리밍됩니다.</p>
-    <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
-    <div class="field">
-      <label for="chat-msg">질문</label>
-      <textarea id="chat-msg" v-model="message" placeholder="예: 공공 웹 접근성 준수 항목을 알려줘"
-        @keydown.ctrl.enter="send"></textarea>
+
+    <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
+
+    <div class="fieldset">
+      <div class="form-group">
+        <div class="form-tit"><label for="chat-msg">질문</label></div>
+        <div class="form-conts">
+          <textarea id="chat-msg" class="krds-input" v-model="message" rows="4"
+            placeholder="예: 공공 웹 접근성 준수 항목을 알려줘" @keydown.ctrl.enter="send"></textarea>
+        </div>
+      </div>
     </div>
-    <button class="btn btn-primary" :disabled="busy" @click="send">
+
+    <button type="button" class="krds-btn primary" :disabled="busy" @click="send">
       {{ busy ? '생성 중…' : '보내기 (Ctrl+Enter)' }}
     </button>
-    <div class="field" style="margin-top: var(--sp-16)">
-      <label for="chat-out">응답</label>
-      <div id="chat-out" class="output" aria-live="polite">{{ output || '—' }}</div>
+
+    <div class="fieldset mt16">
+      <div class="form-group">
+        <div class="form-tit"><label for="chat-out">응답</label></div>
+        <div class="output" id="chat-out" aria-live="polite">{{ output || '—' }}</div>
+      </div>
     </div>
   </section>
 </template>

@@ -1,22 +1,19 @@
 /*
- * 엮음AI 스타일 — KRDS 공식 디자인시스템(krds-uiux) 기반.
- * 색·타이포·간격·radius 값의 진리원천 = 공식 토큰(krds_tokens.css). 아래 :root 는 앱 별칭.
- * 출처: https://github.com/KRDS-uiux/krds-uiux (resources/css/token/krds_tokens.css, fonts/PretendardGOV)
- * 접근성(KWCAG 2.2): 명도대비·포커스 가시화·시맨틱 마크업 준수.
+ * 엮음AI 앱 셸(레이아웃) 스타일.
+ * 컴포넌트 시각(버튼/입력/셀렉트/탭/표/뱃지)은 공식 KRDS component.css(public/krds)에서 로드.
+ * 색·타이포·간격·radius 진리원천 = 공식 krds_tokens.css(public/krds). 아래 :root 는 레이아웃용 별칭.
+ * 출처: https://github.com/KRDS-uiux/krds-uiux · 접근성(KWCAG 2.2) 준수.
  */
-@import "./krds/krds_tokens.css";
 @import "./krds/fonts.css";
 
-/* KRDS rem 스케일: 1rem = 10px (토큰 rem 값이 px로 매핑되도록) */
+/* KRDS rem 스케일: 1rem = 10px */
 html { font-size: 62.5%; }
 
 :root {
-  /* Primary */
   --krds-primary-5: var(--krds-color-light-primary-5);
   --krds-primary-50: var(--krds-color-light-primary-50);
   --krds-primary-60: var(--krds-color-light-primary-60);
   --krds-primary-70: var(--krds-color-light-primary-70);
-  /* Gray */
   --krds-gray-0: var(--krds-color-light-gray-0);
   --krds-gray-5: var(--krds-color-light-gray-5);
   --krds-gray-20: var(--krds-color-light-gray-20);
@@ -24,35 +21,20 @@ html { font-size: 62.5%; }
   --krds-gray-60: var(--krds-color-light-gray-60);
   --krds-gray-70: var(--krds-color-light-gray-70);
   --krds-gray-90: var(--krds-color-light-gray-90);
-  /* Semantic */
   --krds-danger: var(--krds-color-light-danger-50);
-  --krds-danger-bg: var(--krds-color-light-danger-5);
-  --krds-success: var(--krds-color-light-success-50);
-  --krds-success-bg: var(--krds-color-light-success-5);
-  --krds-info: var(--krds-color-light-information-50);
-  --krds-warning-bg: var(--krds-color-light-warning-5);
-  --krds-warning-text: var(--krds-color-light-warning-50);
-  --krds-point: var(--krds-color-light-point-50);
-  /* Spacing (KRDS number 스케일) */
-  --sp-2: var(--krds-number-2);   /* 2px */
-  --sp-4: var(--krds-number-3);   /* 4px */
-  --sp-8: var(--krds-number-5);   /* 8px */
-  --sp-16: var(--krds-number-8);  /* 16px */
-  --sp-24: var(--krds-number-10); /* 24px */
-  --sp-32: var(--krds-number-12); /* 32px */
-  --sp-40: var(--krds-number-14); /* 40px */
-  /* Radius */
-  --radius: var(--krds-radius-medium3);  /* 8px */
-  --radius-pill: var(--krds-radius-max);
-  /* Typography */
+  --sp-4: var(--krds-number-3);
+  --sp-8: var(--krds-number-5);
+  --sp-16: var(--krds-number-8);
+  --sp-24: var(--krds-number-10);
+  --sp-32: var(--krds-number-12);
+  --sp-40: var(--krds-number-14);
+  --radius: var(--krds-radius-medium3);
   --font: var(--krds-typo-font-type), "Pretendard", system-ui, -apple-system, "Malgun Gothic", sans-serif;
-  --fs-h1: var(--krds-pc-font-size-heading-xlarge);   /* 40px */
-  --fs-h2: var(--krds-pc-font-size-heading-large);    /* 32px */
-  --fs-h3: var(--krds-pc-font-size-heading-medium);   /* 24px */
-  --fs-h4: var(--krds-pc-font-size-heading-small);    /* 19px */
-  --fs-body: var(--krds-pc-font-size-body-medium);    /* 17px */
-  --fs-sm: var(--krds-pc-font-size-body-small);       /* 15px */
-  --fs-xs: var(--krds-pc-font-size-body-xsmall);      /* 13px */
+  --fs-h2: var(--krds-pc-font-size-heading-large);
+  --fs-h3: var(--krds-pc-font-size-heading-medium);
+  --fs-body: var(--krds-pc-font-size-body-medium);
+  --fs-sm: var(--krds-pc-font-size-body-small);
+  --fs-xs: var(--krds-pc-font-size-body-xsmall);
 }
 
 * { box-sizing: border-box; }
@@ -64,8 +46,7 @@ body {
   color: var(--krds-gray-90);
   background: var(--krds-gray-5);
 }
-h1, h2, h3, h4 { line-height: 1.5; margin: 0; font-weight: 700; }
-a { color: var(--krds-primary-60); }
+h1, h2, h3, h4 { line-height: 1.5; margin: 0; }
 
 /* 접근성: 본문 바로가기 */
 .skip-link {
@@ -74,110 +55,61 @@ a { color: var(--krds-primary-60); }
   border-radius: 0 0 var(--radius) 0;
 }
 .skip-link:focus { left: 0; }
+:focus-visible { outline: 3px solid var(--krds-primary-50); outline-offset: 2px; }
 
-/* 포커스 가시화(KWCAG) */
-:focus-visible {
-  outline: 3px solid var(--krds-primary-50);
-  outline-offset: 2px;
-}
-
-/* 레이아웃 */
-.header {
-  background: var(--krds-gray-0);
-  border-bottom: 1px solid var(--krds-gray-20);
-}
-.header-inner, .container {
-  max-width: 108rem; margin: 0 auto; padding: 0 var(--sp-24);
-}
+/* 레이아웃 셸 */
+.header { background: var(--krds-gray-0); border-bottom: 1px solid var(--krds-gray-20); }
+.header-inner, .container { max-width: 108rem; margin: 0 auto; padding: 0 var(--sp-24); }
 .brand { display: flex; align-items: baseline; gap: var(--sp-8); padding: var(--sp-16) 0; }
-.brand strong { font-size: var(--fs-h3); color: var(--krds-primary-60); }
+.brand strong { font-size: var(--fs-h3); color: var(--krds-primary-60); font-weight: 700; }
 .brand span { color: var(--krds-gray-70); font-size: var(--fs-sm); }
 
-/* 탭 내비게이션 */
-.nav { display: flex; gap: var(--sp-4); flex-wrap: wrap; }
-.nav button {
+/* 상단 앱 내비게이션(탭 형태) */
+.appnav { display: flex; gap: var(--sp-4); flex-wrap: wrap; }
+.appnav button {
   border: none; background: none; cursor: pointer;
   font-family: var(--font); font-size: var(--fs-body);
-  padding: var(--sp-16) var(--sp-16); color: var(--krds-gray-70);
-  border-bottom: 3px solid transparent;
+  padding: var(--sp-16); color: var(--krds-gray-70); border-bottom: 3px solid transparent;
 }
-.nav button:hover { color: var(--krds-primary-60); }
-.nav button[aria-current="page"] {
-  color: var(--krds-primary-60); font-weight: 700;
-  border-bottom-color: var(--krds-primary-50);
-}
+.appnav button:hover { color: var(--krds-primary-60); }
+.appnav button[aria-current="page"] { color: var(--krds-primary-60); font-weight: 700; border-bottom-color: var(--krds-primary-50); }
 
 main { padding: var(--sp-32) 0 var(--sp-40); }
 .card {
-  background: var(--krds-gray-0);
-  border: 1px solid var(--krds-gray-20);
-  border-radius: var(--radius);
-  padding: var(--sp-24);
-  margin-bottom: var(--sp-24);
+  background: var(--krds-gray-0); border: 1px solid var(--krds-gray-20);
+  border-radius: var(--radius); padding: var(--sp-24); margin-bottom: var(--sp-24);
 }
-.card h2 { font-size: var(--fs-h3); margin-bottom: var(--sp-8); }
+.card h2 { font-size: var(--fs-h3); margin-bottom: var(--sp-8); font-weight: 700; }
 .card .desc { color: var(--krds-gray-70); font-size: var(--fs-sm); margin-bottom: var(--sp-16); }
 
-/* 폼 */
-label { display: block; font-weight: 700; font-size: var(--fs-sm); margin-bottom: var(--sp-8); }
-input[type="text"], input[type="password"], textarea, select {
-  width: 100%; font-family: var(--font); font-size: var(--fs-body);
-  padding: var(--sp-8) var(--sp-16); color: var(--krds-gray-90);
-  border: 1px solid var(--krds-gray-60); border-radius: var(--radius);
-  background: var(--krds-gray-0);
-}
-textarea { min-height: 12rem; resize: vertical; }
-input::placeholder, textarea::placeholder { color: var(--krds-gray-70); }
-.field { margin-bottom: var(--sp-16); }
 .row { display: flex; gap: var(--sp-16); flex-wrap: wrap; align-items: flex-end; }
 .row > * { flex: 1; min-width: 16rem; }
+.mt16 { margin-top: var(--sp-16); }
 
-/* 버튼 */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-8);
-  font-family: var(--font); font-size: var(--fs-body); font-weight: 700;
-  padding: var(--sp-8) var(--sp-24); border-radius: var(--radius);
-  border: 1px solid transparent; cursor: pointer;
-}
-.btn-primary { background: var(--krds-primary-50); color: #fff; }
-.btn-primary:hover { background: var(--krds-primary-60); }
-.btn-primary:disabled { background: var(--krds-gray-20); color: var(--krds-gray-70); cursor: not-allowed; }
-.btn-ghost { background: var(--krds-gray-0); color: var(--krds-primary-60); border-color: var(--krds-gray-30); }
-
-/* 태그·배지 */
-.tag {
-  display: inline-block; font-size: var(--fs-xs); font-weight: 700;
-  padding: 0.2rem var(--sp-8); border-radius: var(--radius-pill);
-}
-.tag-success { background: var(--krds-success-bg); color: var(--krds-success); }
-.tag-danger { background: var(--krds-danger-bg); color: var(--krds-danger); }
-.tag-info { background: var(--krds-primary-5); color: var(--krds-primary-60); }
-
-/* 결과 영역 */
+/* 결과·인용 */
 .output {
   white-space: pre-wrap; word-break: break-word;
   background: var(--krds-gray-5); border: 1px solid var(--krds-gray-20);
   border-radius: var(--radius); padding: var(--sp-16); min-height: 4.8rem;
 }
-.alert {
-  border-radius: var(--radius); padding: var(--sp-8) var(--sp-16); margin-bottom: var(--sp-16);
-  font-size: var(--fs-sm);
+.cite {
+  border-left: 3px solid var(--krds-primary-50); padding: var(--sp-8) var(--sp-16);
+  margin: var(--sp-8) 0; background: var(--krds-primary-5); border-radius: 0 var(--radius) var(--radius) 0;
 }
-.alert-danger { background: var(--krds-danger-bg); color: var(--krds-danger); }
-
-/* 인용·표 */
-.cite { border-left: 3px solid var(--krds-primary-50); padding: var(--sp-8) var(--sp-16); margin: var(--sp-8) 0; background: var(--krds-primary-5); border-radius: 0 var(--radius) var(--radius) 0; }
 .cite .meta { font-size: var(--fs-xs); color: var(--krds-gray-70); font-weight: 700; }
-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
-th, td { text-align: left; padding: var(--sp-8); border-bottom: 1px solid var(--krds-gray-20); }
-th { color: var(--krds-gray-70); }
 
 /* 토큰 바 */
 .tokenbar { background: var(--krds-primary-5); border-bottom: 1px solid var(--krds-gray-20); }
 .tokenbar .container { display: flex; align-items: center; gap: var(--sp-16); padding-top: var(--sp-8); padding-bottom: var(--sp-8); }
-.tokenbar label { margin: 0; white-space: nowrap; }
+.tokenbar .tokenbar-label { font-weight: 700; font-size: var(--fs-sm); white-space: nowrap; }
 .tokenbar input { max-width: 32rem; }
+
+/* 인라인 알림(KRDS 미제공 → 토큰 기반 커스텀) */
+.app-alert { border-radius: var(--radius); padding: var(--sp-8) var(--sp-16); margin-bottom: var(--sp-16); font-size: var(--fs-sm); border: 1px solid transparent; }
+.app-alert.danger { background: var(--krds-color-light-danger-5); color: var(--krds-color-light-danger-60); border-color: var(--krds-color-light-danger-20); }
+.app-alert.info { background: var(--krds-primary-5); color: var(--krds-primary-60); border-color: var(--krds-color-light-primary-20); }
 
 .footer { border-top: 1px solid var(--krds-gray-20); color: var(--krds-gray-70); font-size: var(--fs-sm); padding: var(--sp-24) 0; }
 .muted { color: var(--krds-gray-70); font-size: var(--fs-sm); }
+.stack > * + * { margin-top: var(--sp-16); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }

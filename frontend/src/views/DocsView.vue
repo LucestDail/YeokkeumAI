@@ -6,12 +6,9 @@ const docs = ref<DocItem[]>([])
 const error = ref('')
 const notice = ref('')
 
-// 등록(텍스트)
 const filename = ref('')
 const text = ref('')
-// 업로드(파일)
 const fileInput = ref<HTMLInputElement | null>(null)
-// 검색
 const query = ref('')
 const result = ref<RagResult | null>(null)
 const busy = ref(false)
@@ -60,59 +57,70 @@ onMounted(loadDocs)
 <template>
   <section class="card" aria-labelledby="docs-h">
     <h2 id="docs-h">문서·검색 (RAG)</h2>
-    <p class="desc">규정·지식 문서를 등록하고 근거 기반으로 검색합니다. 파일은 PDF·텍스트를 지원합니다(HWP는 로드맵).</p>
-    <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
-    <div v-if="notice" class="alert" role="status" style="background: var(--krds-primary-5); color: var(--krds-primary-60)">{{ notice }}</div>
+    <p class="desc">규정·지식 문서를 등록하고 근거 기반으로 검색합니다. 파일은 PDF·텍스트·HWP/HWPX를 지원합니다.</p>
+    <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
+    <div v-if="notice" class="app-alert info" role="status">{{ notice }}</div>
 
-    <div class="row">
-      <div class="field">
-        <label for="up-file">파일 업로드</label>
-        <input id="up-file" ref="fileInput" type="file" accept=".pdf,.txt,.md" />
-      </div>
-      <div style="flex:0 0 auto">
-        <button class="btn btn-ghost" :disabled="busy" @click="uploadSelected">업로드·색인</button>
+    <div class="fieldset">
+      <div class="form-group">
+        <div class="form-tit"><label for="up-file">파일 업로드</label></div>
+        <div class="form-conts row">
+          <input id="up-file" ref="fileInput" type="file" class="krds-input" accept=".pdf,.txt,.md,.hwp,.hwpx" />
+          <div style="flex:0 0 auto">
+            <button type="button" class="krds-btn secondary" :disabled="busy" @click="uploadSelected">업로드·색인</button>
+          </div>
+        </div>
+        <p class="form-hint">PDF · 텍스트(.txt/.md) · HWP/HWPX 지원</p>
       </div>
     </div>
 
     <details style="margin: var(--sp-16) 0">
       <summary style="cursor:pointer; font-weight:700">텍스트 직접 등록</summary>
-      <div class="field" style="margin-top: var(--sp-8)">
-        <label for="doc-name">문서명</label>
-        <input id="doc-name" type="text" v-model="filename" placeholder="예: 개인정보보호지침.txt" />
+      <div class="fieldset mt16">
+        <div class="form-group">
+          <div class="form-tit"><label for="doc-name">문서명</label></div>
+          <div class="form-conts"><input id="doc-name" type="text" class="krds-input" v-model="filename" placeholder="예: 개인정보보호지침.txt" /></div>
+        </div>
+        <div class="form-group">
+          <div class="form-tit"><label for="doc-text">본문</label></div>
+          <div class="form-conts"><textarea id="doc-text" class="krds-input" v-model="text" rows="5" placeholder="규정·지침 본문"></textarea></div>
+        </div>
       </div>
-      <div class="field">
-        <label for="doc-text">본문</label>
-        <textarea id="doc-text" v-model="text" placeholder="규정·지침 본문"></textarea>
-      </div>
-      <button class="btn btn-ghost" :disabled="busy" @click="ingestText">텍스트 색인</button>
+      <button type="button" class="krds-btn secondary" :disabled="busy" @click="ingestText">텍스트 색인</button>
     </details>
 
-    <div class="field">
-      <label>등록 문서 ({{ docs.length }})</label>
-      <table v-if="docs.length">
-        <thead><tr><th scope="col">문서명</th><th scope="col">글자수</th><th scope="col">청크</th></tr></thead>
+    <p class="form-tit"><label>등록 문서 ({{ docs.length }})</label></p>
+    <div v-if="docs.length" class="krds-table-wrap">
+      <table class="tbl col data">
+        <caption class="sr-only">등록된 문서 목록: 문서명, 글자수, 청크수</caption>
+        <colgroup><col style="width:60%"><col><col></colgroup>
+        <thead>
+          <tr><th scope="col">문서명</th><th scope="col">글자수</th><th scope="col">청크</th></tr>
+        </thead>
         <tbody>
           <tr v-for="d in docs" :key="d.id">
             <td>{{ d.filename }}</td><td>{{ d.chars }}</td><td>{{ d.nChunks ?? '—' }}</td>
           </tr>
         </tbody>
       </table>
-      <p v-else class="muted">등록된 문서가 없습니다.</p>
     </div>
+    <p v-else class="muted">등록된 문서가 없습니다.</p>
 
     <hr style="border:none; border-top:1px solid var(--krds-gray-20); margin: var(--sp-24) 0" />
 
-    <div class="field">
-      <label for="rag-q">근거 검색</label>
-      <div class="row">
-        <input id="rag-q" type="text" v-model="query" placeholder="예: 개인정보 보관기간 규정" @keyup.enter="search" />
-        <div style="flex:0 0 auto"><button class="btn btn-primary" :disabled="busy" @click="search">검색</button></div>
+    <div class="fieldset">
+      <div class="form-group">
+        <div class="form-tit"><label for="rag-q">근거 검색</label></div>
+        <div class="form-conts row">
+          <input id="rag-q" type="text" class="krds-input" v-model="query" placeholder="예: 개인정보 보관기간 규정" @keyup.enter="search" />
+          <div style="flex:0 0 auto"><button type="button" class="krds-btn primary" :disabled="busy" @click="search">검색</button></div>
+        </div>
       </div>
     </div>
     <div v-if="result" aria-live="polite">
       <p>
-        <span v-if="result.grounded" class="tag tag-success">근거 기반</span>
-        <span v-else class="tag tag-danger">근거 없음</span>
+        <span v-if="result.grounded" class="krds-badge bg-light-success">근거 기반</span>
+        <span v-else class="krds-badge bg-light-danger">근거 없음</span>
       </p>
       <div class="output">{{ result.answer }}</div>
       <div v-for="(c, i) in result.citations" :key="i" class="cite">
