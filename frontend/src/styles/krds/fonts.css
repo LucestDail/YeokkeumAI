@@ -1,0 +1,22 @@
+/* KRDS 표준 서체 Pretendard GOV — self-host(폐쇄망 대응). 출처: KRDS-uiux/krds-uiux */
+@font-face {
+  font-family: "Pretendard GOV";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PretendardGOV-Regular.subset.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard GOV";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PretendardGOV-Medium.subset.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard GOV";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PretendardGOV-Bold.subset.woff2") format("woff2");
+}

@@ -3,7 +3,8 @@
 **KRDS(디지털정부 디자인시스템)** 규격에 맞춘 엮음AI 웹 콘솔.
 
 - **스택**: Vue 3 · Vite 6 · TypeScript(vue-tsc 타입체크)
-- **디자인**: [KRDS](https://www.krds.go.kr) 토큰 정렬 — Primary `#256EF4`, Pretendard GOV, line-height 1.5, spacing 4·8·16·24·32, radius 8
+- **디자인**: **공식 [KRDS](https://www.krds.go.kr) 디자인시스템([krds-uiux](https://github.com/KRDS-uiux/krds-uiux)) 토큰 적용** — `src/styles/krds/krds_tokens.css`(공식 토큰, 색·타이포·간격·radius의 진리원천). Primary `#256EF4`, 1rem=10px(62.5%) 스케일. 앱 스타일은 공식 토큰을 참조하는 얇은 별칭 레이어.
+- **서체**: **Pretendard GOV self-host**(`public/fonts/`, 폐쇄망 대응 — CDN 미의존)
 - **접근성(KWCAG 2.2)**: 본문 바로가기, 포커스 가시화, 시맨틱 마크업, `aria-live`/`aria-current`, `lang="ko"`
 
 ## 화면
@@ -29,4 +30,7 @@ npm run preview  # dist 미리보기
 
 백엔드(Spring Boot)를 `:8080`에 먼저 띄우세요(`mvn spring-boot:run`). 운영 배포 시 `dist/`를 정적 호스팅하거나 백엔드 `static/`으로 복사합니다.
 
-> Pretendard GOV는 현재 CDN 링크로 로드합니다. 폐쇄망 배포 시 서체를 self-host 하세요.
+## 출처·라이선스
+
+- 디자인 토큰(`src/styles/krds/krds_tokens.css`)·서체(`public/fonts/PretendardGOV-*`)는 **KRDS 공식 배포본 [KRDS-uiux/krds-uiux](https://github.com/KRDS-uiux/krds-uiux)** 에서 가져와 self-host 합니다. KRDS 자산은 배포처의 라이선스·이용조건을 따릅니다.
+- Pretendard GOV 서체는 Pretendard(OFL) 기반입니다.
