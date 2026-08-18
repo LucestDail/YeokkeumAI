@@ -1,22 +1,100 @@
-# 엮음AI(YeokkeumAI) — 공공 업무보조 AI 플랫폼
+# 엮음AI (YeokkeumAI)
 
-> **온프렘/내부망에서 도는, 국산 K-AI도 물리는 벤더무관 게이트웨이 위에, 규정검토 RAG·문서작성/요약·민원 상담·업무 에이전트를 얹고, 모든 처리에 사람 승인(HITL)과 감사로그를 붙인 범용 AI 플랫폼.**
-> (브랜드명 "엮음AI"=연결. 잠정 코드네임, 변경 가능.)
+**공공기관 업무보조 AI 플랫폼** — 온프렘/내부망에서 도는, 국산 K-AI도 물리는 벤더무관 게이트웨이 위에 **규정검토 RAG · 문서 작성/요약 · 민원 상담 · 업무 에이전트**를 얹고, 모든 처리에 **사람 승인(HITL)과 감사로그**를 붙인 범용 AI 플랫폼.
 
-## 왜 이 방향인가 (근거)
-2026-08 공공 AI 수요 리서치(조달청·NIA) 결과, 공공이 실제로 사는 기능은 **RAG 규정검토 · 문서작성/요약 · 민원 챗봇 · 업무 에이전트(MCP) · AI 게이트웨이(국산모델 포함) · 데이터분석**이며, 전부 **온프렘/N2SF · CSAP · HITL · 감사가능성** 위에서다. "자율 코드생성·자기배포" 수요는 없다. 엮음AI은 **자율성이 아니라 통제·책임성·연계를 파는** 제품으로 이 수요에 정조준한다.
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.6-green.svg)](https://spring.io/projects/spring-boot)
+[![eGovFrame](https://img.shields.io/badge/eGovFrame_5.0-aligned-informational.svg)](https://www.egovframe.go.kr/)
 
-## 무엇인가
-- **범용 사용성 우선**: 누구나 쉽게 쓰는 채팅·문서·상담·관리 콘솔(SSE 스트리밍).
-- **공공 RFP 수용**: 표준 SW 요구사항 11분류 + 법제도 통과조건(전자정부법·장애인차별금지법·KWCAG 2.2 웹접근성·개인정보보호법·CSAP·N2SF·표준프레임워크·감리)을 설계에 반영.
-- **핵심 4엔진**: ①LLM 게이트웨이(벤더무관·국산) ②RAG(규정검토·인용) ③에이전트+MCP(+HITL 승인) ④데이터·분석.
+> **엮음(Yeokkeum) = "엮다/연계".** 자율성이 아니라 **통제·책임성·연계**를 파는 제품 — 공공이 실제로 원하는 것에 정조준.
 
-## 문서
-- [기능목록](docs/기능목록.md) — 공공 RFP 수용 전체 기능·통과조건·조달 대응 (핵심)
-- [PLAN](PLAN.md) — 아키텍처·스택·단계
+---
 
-## 정직한 스코프
-단일 플랫폼이 "모든 RFP"를 문자 그대로 충족하진 못한다. 엮음AI은 **공공 AI 수요의 상위집합 + 정보화 RFP 공통분모**를 커버하고 개별 RFP엔 설정/모듈 조합으로 대응하는 것을 목표로 한다. 인증(CSAP)·조달등록·감리는 기능이 아니라 시간·비용·조직의 문제이며, 기술(Phase 0~2)로 제품력을 먼저 만든 뒤 실 수요처 레퍼런스와 병행한다.
+## 왜?
 
-## 자산 재사용
-osh-ai-gateway(게이트웨이) · my-computer/HARU(MCP+HITL) · osh/simpleStock(RAG·요약·SSE) 기법을 흡수해 재조립.
+2026 공공 AI 수요(조달청·NIA)는 명확하다: **RAG 규정검토 · 문서 작성/요약 · 민원 챗봇 · 업무 에이전트(MCP) · AI 게이트웨이(국산모델 포함) · 데이터 분석** — 전부 **온프렘/N2SF · CSAP · 사람 승인 · 감사가능성** 위에서. "자율 코드생성/자기배포" 수요는 없다. 엮음AI는 이 수요에 맞춰 **연계·통제·책임성**을 설계 원칙으로 삼는다.
+
+## 핵심 기능 (4엔진)
+
+- **🔌 LLM 게이트웨이 (벤더무관)** — OpenAI 호환 엔드포인트면 무엇이든(OpenRouter · 사내 게이트웨이 · **국산 K-AI** · vLLM). `base-url`/`model`/`key` 로 핫스왑. 키 없으면 **오프라인 stub**로 동작(폐쇄망 데모/결정적 테스트).
+- **🔎 RAG (규정/지식 검색·검토)** — 문단 청킹 + **순수 자바 BM25**(외부 임베딩/벡터DB 불필요, 온프렘) + **근거 인용**. 근거 없으면 정직 거절.
+- **📄 문서 작성·요약** — 보고서/공문/RFP 초안, 다문서 요약(HWP 파싱은 로드맵).
+- **🧾 감사로그 + RBAC** — 모든 요청을 **누가·언제·무엇을·어떤 모델로** 기록. admin/user 역할, **secure-by-default**(토큰 없으면 CLOSED).
+
+## 기술 스택 — eGovFrame 5.0 정렬
+
+| 구분 | 채택 |
+|---|---|
+| 언어/프레임워크 | **Java 17 · Spring Boot 3.5.6** (전자정부 표준프레임워크 5.0 baseline) |
+| 아키텍처 | 표준 3-tier (Controller → Service → Repository) |
+| AI layer | **Spring AI 1.0.1** (OpenAI 호환 ChatModel) + 경량 HttpClient + 오프라인 stub |
+| 영속 | Spring Data JPA · H2(dev) / PostgreSQL(prod) |
+| 인증 | RBAC 인터셉터(→ Spring Security 6.5.5 이관 예정) |
+| 프론트 | 현재 정적 콘솔 → **KRDS**(디지털정부 디자인시스템) + Vue 3 (Phase 1) |
+| 배포 | 비root 컨테이너 · docker-compose |
+
+정렬 상세 → [docs/스택-eGov5.0.md](docs/스택-eGov5.0.md)
+
+## 빠른 시작
+
+```bash
+# 로컬 실행 (키 없이 stub로 즉시 동작)
+export ADMIN_TOKEN=change-me USER_TOKEN=change-me
+mvn spring-boot:run
+# → http://localhost:8080  (웹 콘솔)
+
+# 실제 LLM 연결 (OpenAI 호환 엔드포인트)
+export LLM_API_KEY=sk-...  LLM_BASE_URL=https://openrouter.ai/api/v1  LLM_MODEL=deepseek/deepseek-chat
+# 사내/국산 게이트웨이 예: LLM_BASE_URL=http://<gateway>/v1
+
+# 온프렘 컨테이너
+docker compose up -d --build   # → http://localhost:8088
+```
+
+> **secure-by-default**: `ADMIN_TOKEN`/`USER_TOKEN` 미설정 시 전 API가 닫힙니다. 로컬 개방은 `INSECURE_OPEN_MODE=true`.
+
+## API
+
+| 메서드 | 경로 | 설명 | 권한 |
+|---|---|---|---|
+| GET | `/health` | 헬스체크 | 공개 |
+| GET | `/` | 웹 콘솔(UI) | 공개 |
+| POST | `/api/chat` | 채팅 (SSE 스트리밍) | user |
+| POST | `/api/summarize` | 요약 | user |
+| POST | `/api/draft` | 문서 초안 | user |
+| POST | `/api/docs` | 문서 색인(RAG) | user |
+| GET | `/api/docs` | 문서 목록 | user |
+| POST | `/api/rag/query` | 근거기반 질의(인용) | user |
+| GET | `/api/audit` | 감사로그 | **admin** |
+
+인증: `Authorization: Bearer <token>` 또는 `X-API-Key: <token>`.
+
+## 프로젝트 구조
+
+```
+src/main/java/kr/yeokkeum/
+├── gateway/   LlmGateway · SpringAiGateway · OpenAiCompatGateway · StubGateway
+├── rag/       Tokenizer(CJK) · Chunker · Bm25 · RagService
+├── doc/       Document · Chunk (JPA)
+├── audit/     AuditLog · AuditService
+├── auth/      Principal · AuthInterceptor (RBAC, secure-by-default)
+├── web/       Chat/Api/Audit/Public 컨트롤러 + DTO
+└── config/    IeumProperties · WebConfig · GatewayConfig · StartupChecks
+src/main/resources/static/index.html   ← 프론트(정적 콘솔; Phase1 Vue3+KRDS로 대체 예정)
+docs/                                  ← 공공 RFP 기능목록 · eGov5.0 정렬표
+```
+
+## 로드맵
+
+- **Phase 0 (완료)** — 게이트웨이 · RAG · 요약/초안 · RBAC · 감사로그 · 온프렘 컨테이너
+- **Phase 1** — 규정검토 에이전트 · HWP/PDF 파싱 · 다국어 상담 · **Vue 3 + KRDS 프론트(웹접근성 인증)** · pgvector 하이브리드 · Spring Security 이관
+- **Phase 2** — 업무 에이전트 + MCP 도구 + HITL 승인 · 데이터 분석/이상탐지 · 오픈API/SSO
+- **Phase 3** — CSAP · N2SF · 개인정보(PIA) · 감리 산출물 · 국산모델 · DR/이중화
+- **Phase 4** — 디지털서비스몰/혁신제품 등록
+
+기능·통과조건 전체 → [docs/기능목록.md](docs/기능목록.md)
+
+## 라이선스
+
+[Apache License 2.0](LICENSE) — eGov 생태계 관례 정렬.

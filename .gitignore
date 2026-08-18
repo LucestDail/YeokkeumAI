@@ -6,7 +6,3 @@ target/
 .DS_Store
 .env
 data/
-# prototype python
-prototype-python/.venv*/
-prototype-python/**/__pycache__/
-prototype-python/**/*.db

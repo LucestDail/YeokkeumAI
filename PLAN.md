@@ -15,7 +15,7 @@
 - 에이전트/도구: **MCP**(my-computer/HARU 기법), 도구 allowlist, HITL 승인 큐 (Phase2).
 - 영속: **JPA + H2(dev) / PostgreSQL(prod)** → Phase3 pgvector. 감사로그 테이블.
 - 배포: **비root 컨테이너** docker-compose(MVP) → k8s/폐쇄망 패키지·이중화/DR(공공).
-- ※ Python(FastAPI) MVP는 `prototype-python/`에 **기능 검증 프로토타입으로 보존**(BM25·게이트웨이·RAG 설계 참조). Java가 기준 베이스.
+- ※ 초기 기능 검증은 Python(FastAPI)로 빠르게 프로토타이핑 후 폐기했고, **Java(Spring Boot)가 유일 기준 베이스**다.
 - **eGovFrame 5.0 정렬(2026-03, Spring Boot 3.5.6)**: 적용=Boot 3.5.6·**Spring AI 1.0.1(AI layer, SpringAiGateway)**·JPA/Hibernate 6.6·JUnit5. 계획=Spring Security 6.5.5 이관·springdoc·(선택)MyBatis 3.5.19·Batch 5.2.3·Quartz·POI. 상세=[docs/스택-eGov5.0.md](docs/스택-eGov5.0.md).
 - **프론트=KRDS(krds.go.kr)**: 디자인 토큰·컴포넌트·웹접근성 내장. Phase1 Vue3+KRDS로 웹접근성 인증(WA) 대응.
 
