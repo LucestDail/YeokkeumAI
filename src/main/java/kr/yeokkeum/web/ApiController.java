@@ -8,6 +8,7 @@ import java.util.Map;
 import kr.yeokkeum.audit.AuditService;
 import kr.yeokkeum.auth.Principal;
 import kr.yeokkeum.doc.DocText;
+import kr.yeokkeum.doc.HwpExtractor;
 import kr.yeokkeum.gateway.ChatMessage;
 import kr.yeokkeum.gateway.ChatResult;
 import kr.yeokkeum.gateway.LlmGateway;
@@ -34,11 +35,13 @@ public class ApiController {
     private final LlmGateway gateway;
     private final RagService rag;
     private final AuditService audit;
+    private final HwpExtractor hwp;
 
-    public ApiController(LlmGateway gateway, RagService rag, AuditService audit) {
+    public ApiController(LlmGateway gateway, RagService rag, AuditService audit, HwpExtractor hwp) {
         this.gateway = gateway;
         this.rag = rag;
         this.audit = audit;
+        this.hwp = hwp;
     }
 
     private static Principal principal(HttpServletRequest req) {
@@ -99,21 +102,35 @@ public class ApiController {
         return res;
     }
 
-    /** 파일 업로드 색인 — PDF/텍스트 지원(HWP는 로드맵). */
+    /** 파일 업로드 색인 — PDF/텍스트 + HWP/HWPX(rhwp export-text). */
     @PostMapping("/api/docs/upload")
     public IngestResult upload(@RequestParam("file") MultipartFile file, HttpServletRequest req) {
         Principal p = principal(req);
         String filename = file.getOriginalFilename() == null ? "upload" : file.getOriginalFilename();
+        String lower = filename.toLowerCase();
         String text;
         try {
-            text = DocText.extract(filename, file.getBytes());
+            if (lower.endsWith(".hwp") || lower.endsWith(".hwpx")) {
+                text = hwp.extract(filename, file.getBytes());
+            } else {
+                text = DocText.extract(filename, file.getBytes());
+            }
+        } catch (HwpExtractor.HwpExtractionException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         } catch (UnsupportedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
         } catch (IOException | RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 처리 실패: " + e.getMessage());
         }
         IngestResult res = rag.ingest(filename, text);
-        audit.record(p.actor(), p.role(), "upload", Map.of("filename", filename, "nChunks", res.nChunks()));
+        audit.record(p.actor(), p.role(), "upload",
+                Map.of("filename", filename, "nChunks", res.nChunks(), "type", fileType(lower)));
         return res;
+    }
+
+    private static String fileType(String lower) {
+        if (lower.endsWith(".hwp") || lower.endsWith(".hwpx")) return "hwp";
+        if (lower.endsWith(".pdf")) return "pdf";
+        return "text";
     }
 }

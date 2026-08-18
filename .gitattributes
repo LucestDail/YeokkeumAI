@@ -1,0 +1,4 @@
+bin/rhwp binary
+*.hwp binary
+*.hwpx binary
+*.woff2 binary

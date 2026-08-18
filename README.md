@@ -19,7 +19,7 @@
 
 - **🔌 LLM 게이트웨이 (벤더무관)** — OpenAI 호환 엔드포인트면 무엇이든(OpenRouter · 사내 게이트웨이 · **국산 K-AI** · vLLM). `base-url`/`model`/`key` 로 핫스왑. 키 없으면 **오프라인 stub**로 동작(폐쇄망 데모/결정적 테스트).
 - **🔎 RAG (규정/지식 검색·검토)** — 문단 청킹 + **순수 자바 BM25**(외부 임베딩/벡터DB 불필요, 온프렘) + **근거 인용**. 근거 없으면 정직 거절.
-- **📄 문서 작성·요약** — 보고서/공문/RFP 초안, 다문서 요약(HWP 파싱은 로드맵).
+- **📄 문서 작성·요약 + HWP** — 보고서/공문/RFP 초안·다문서 요약. 업로드 색인은 **PDF(PDFBox)·텍스트·HWP/HWPX**(오픈소스 [rhwp](https://github.com/edwardkim/rhwp) `export-text` 바이너리 위임) 지원.
 - **🧾 감사로그 + RBAC** — 모든 요청을 **누가·언제·무엇을·어떤 모델로** 기록. admin/user 역할, **secure-by-default**(토큰 없으면 CLOSED).
 
 ## 기술 스택 — eGovFrame 5.0 정렬
@@ -53,6 +53,18 @@ docker compose up -d --build   # → http://localhost:8088
 ```
 
 > **secure-by-default**: `ADMIN_TOKEN`/`USER_TOKEN` 미설정 시 전 API가 닫힙니다. 로컬 개방은 `INSECURE_OPEN_MODE=true`.
+
+### HWP/HWPX 파서(rhwp)
+
+HWP/HWPX 업로드는 오픈소스 [rhwp](https://github.com/edwardkim/rhwp)(Rust·MIT)의 `export-text` 바이너리에 위임합니다. 리포에 macOS(arm64) 바이너리(`bin/rhwp`)를 동봉했습니다. **다른 플랫폼(리눅스 배포 등)은 재빌드 후 교체**하세요.
+
+```bash
+# rhwp 클론 후
+cargo build --release --bin rhwp
+cp target/release/rhwp <yeokkeumai>/bin/rhwp     # 또는 RHWP_PATH 로 경로 지정
+```
+
+바이너리가 현재 플랫폼에서 실행 불가하면 HWP 업로드만 503으로 명확히 실패하고(다른 기능 정상), 텍스트/PDF는 영향 없습니다.
 
 ## API
 
@@ -91,7 +103,7 @@ docs/                                  ← 공공 RFP 기능목록 · eGov5.0 �
 ## 로드맵
 
 - **Phase 0 (완료)** — 게이트웨이 · RAG · 요약/초안 · RBAC · 감사로그 · 온프렘 컨테이너
-- **Phase 1** — 규정검토 에이전트 · HWP/PDF 파싱 · 다국어 상담 · **Vue 3 + KRDS 프론트(웹접근성 인증)** · pgvector 하이브리드 · Spring Security 이관
+- **Phase 1** — 규정검토 에이전트 · **HWP/PDF 파싱(완료)** · 다국어 상담 · **Vue 3 + KRDS 프론트(완료)** · Spring Security 이관(완료) · pgvector 하이브리드(예정)
 - **Phase 2** — 업무 에이전트 + MCP 도구 + HITL 승인 · 데이터 분석/이상탐지 · 오픈API/SSO
 - **Phase 3** — CSAP · N2SF · 개인정보(PIA) · 감리 산출물 · 국산모델 · DR/이중화
 - **Phase 4** — 디지털서비스몰/혁신제품 등록

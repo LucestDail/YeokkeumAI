@@ -9,6 +9,7 @@ public class IeumProperties {
     private Llm llm = new Llm();
     private Auth auth = new Auth();
     private Rag rag = new Rag();
+    private Doc doc = new Doc();
 
     public Llm getLlm() { return llm; }
     public void setLlm(Llm llm) { this.llm = llm; }
@@ -16,6 +17,8 @@ public class IeumProperties {
     public void setAuth(Auth auth) { this.auth = auth; }
     public Rag getRag() { return rag; }
     public void setRag(Rag rag) { this.rag = rag; }
+    public Doc getDoc() { return doc; }
+    public void setDoc(Doc doc) { this.doc = doc; }
 
     public static class Llm {
         private String provider = "auto";
@@ -57,5 +60,18 @@ public class IeumProperties {
         public void setChunkChars(int v) { this.chunkChars = v; }
         public int getTopK() { return topK; }
         public void setTopK(int v) { this.topK = v; }
+    }
+
+    /** 문서 처리 — HWP/HWPX 파싱은 rhwp 바이너리(export-text) 서브프로세스로 위임. */
+    public static class Doc {
+        /** rhwp 실행 경로. 기본 bin/rhwp(작업디렉토리 기준), 없으면 PATH의 rhwp. 환경변수 RHWP_PATH 로 오버라이드. */
+        private String rhwpPath = "bin/rhwp";
+        /** rhwp 실행 타임아웃(ms). */
+        private long rhwpTimeoutMs = 30_000;
+
+        public String getRhwpPath() { return rhwpPath; }
+        public void setRhwpPath(String v) { this.rhwpPath = v; }
+        public long getRhwpTimeoutMs() { return rhwpTimeoutMs; }
+        public void setRhwpTimeoutMs(long v) { this.rhwpTimeoutMs = v; }
     }
 }

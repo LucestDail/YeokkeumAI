@@ -39,6 +39,9 @@ ieum:
   rag:
     chunk-chars: ${RAG_CHUNK_CHARS:1200}
     top-k: ${RAG_TOP_K:5}
+  doc:
+    rhwp-path: ${RHWP_PATH:bin/rhwp}                 # HWP/HWPX 파서(rhwp export-text). 없으면 PATH의 rhwp
+    rhwp-timeout-ms: ${RHWP_TIMEOUT_MS:30000}
 
 logging:
   level:

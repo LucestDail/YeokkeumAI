@@ -7,7 +7,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-/** 업로드 문서에서 텍스트 추출. PDF=PDFBox, txt/md=UTF-8. HWP/HWPX=로드맵(미지원). */
+/** 업로드 문서에서 텍스트 추출. PDF=PDFBox, txt/md=UTF-8. HWP/HWPX는 {@link HwpExtractor}가 처리(여기선 방어적 거부). */
 public final class DocText {
 
     private DocText() {}
@@ -22,8 +22,7 @@ public final class DocText {
             }
         }
         if (lower.endsWith(".hwp") || lower.endsWith(".hwpx")) {
-            throw new UnsupportedOperationException(
-                    "HWP/HWPX 파싱은 로드맵(현재 미지원). PDF 또는 텍스트로 변환해 업로드하세요.");
+            throw new UnsupportedOperationException("HWP/HWPX 는 HwpExtractor(rhwp) 경로로 처리해야 합니다.");
         }
         return new String(bytes, StandardCharsets.UTF_8);
     }
