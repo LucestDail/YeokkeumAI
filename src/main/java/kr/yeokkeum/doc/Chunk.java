@@ -17,6 +17,10 @@ public class Chunk {
     @Column(length = 1_000_000)
     private String text;
 
+    /** dense 임베딩(float[] LITTLE_ENDIAN 직렬화). null=미임베딩 → 검색은 BM25 로 폴백. */
+    @Column(length = 100_000)
+    private byte[] embedding;
+
     protected Chunk() {}
 
     public Chunk(String id, String docId, String filename, int idx, String text) {
@@ -32,4 +36,6 @@ public class Chunk {
     public String getFilename() { return filename; }
     public int getIdx() { return idx; }
     public String getText() { return text; }
+    public byte[] getEmbedding() { return embedding; }
+    public void setEmbedding(byte[] embedding) { this.embedding = embedding; }
 }

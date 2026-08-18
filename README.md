@@ -18,7 +18,7 @@
 ## 핵심 기능 (4엔진)
 
 - **🔌 LLM 게이트웨이 (벤더무관)** — OpenAI 호환 엔드포인트면 무엇이든(OpenRouter · 사내 게이트웨이 · **국산 K-AI** · vLLM). `base-url`/`model`/`key` 로 핫스왑. 키 없으면 **오프라인 stub**로 동작(폐쇄망 데모/결정적 테스트).
-- **🔎 RAG (규정/지식 검색·검토)** — 문단 청킹 + **순수 자바 BM25**(외부 임베딩/벡터DB 불필요, 온프렘) + **근거 인용**. 근거 없으면 정직 거절.
+- **🔎 하이브리드 RAG (규정/지식 검색·검토)** — 문단 청킹 + **BM25(어휘) + BGE-M3 dense(의미)** 를 **RRF 융합** + **근거 인용**. 임베딩은 OpenAI 호환 `/embeddings`(BGE-M3/TEI·vLLM·국산 게이트웨이)로 벤더무관, 벡터는 인메모리 코사인(소규모 온프렘엔 벡터DB 불필요). **엔드포인트 없으면 오프라인 stub 임베더로 자동 폴백**(폐쇄망/결정적 테스트). 근거 없으면 정직 거절.
 - **📄 문서 작성·요약 + HWP** — 보고서/공문/RFP 초안·다문서 요약. 업로드 색인은 **PDF(PDFBox)·텍스트·HWP/HWPX**(오픈소스 [rhwp](https://github.com/edwardkim/rhwp) `export-text` 바이너리 위임) 지원.
 - **🧾 감사로그 + RBAC** — 모든 요청을 **누가·언제·무엇을·어떤 모델로** 기록. admin/user 역할, **secure-by-default**(토큰 없으면 CLOSED).
 
@@ -29,6 +29,7 @@
 | 언어/프레임워크 | **Java 17 · Spring Boot 3.5.6** (전자정부 표준프레임워크 5.0 baseline) |
 | 아키텍처 | 표준 3-tier (Controller → Service → Repository) |
 | AI layer | **Spring AI 1.0.1** (OpenAI 호환 ChatModel) + 경량 HttpClient + 오프라인 stub |
+| 검색 | **하이브리드**: 순수 자바 BM25 + BGE-M3 dense(OpenAI 호환 `/embeddings`, 인메모리 코사인) + RRF |
 | 영속 | Spring Data JPA · H2(dev) / PostgreSQL(prod) |
 | 인증 | **Spring Security 6.5.x** 토큰 RBAC(무상태) · secure-by-default |
 | 프론트 | **Vue 3 + Vite + KRDS**(디지털정부 디자인시스템, `frontend/`) · KWCAG 2.2 지향 |
@@ -103,7 +104,7 @@ docs/                                  ← 공공 RFP 기능목록 · eGov5.0 �
 ## 로드맵
 
 - **Phase 0 (완료)** — 게이트웨이 · RAG · 요약/초안 · RBAC · 감사로그 · 온프렘 컨테이너
-- **Phase 1** — 규정검토 에이전트 · **HWP/PDF 파싱(완료)** · 다국어 상담 · **Vue 3 + KRDS 프론트(완료)** · Spring Security 이관(완료) · pgvector 하이브리드(예정)
+- **Phase 1** — 규정검토 에이전트 · **HWP/PDF 파싱(완료)** · 다국어 상담 · **Vue 3 + KRDS 프론트(완료)** · Spring Security 이관(완료) · **BM25+BGE-M3 하이브리드 검색(완료)** · pgvector(대규모 시 예정, 현재 인메모리)
 - **Phase 2** — 업무 에이전트 + MCP 도구 + HITL 승인 · 데이터 분석/이상탐지 · 오픈API/SSO
 - **Phase 3** — CSAP · N2SF · 개인정보(PIA) · 감리 산출물 · 국산모델 · DR/이중화
 - **Phase 4** — 디지털서비스몰/혁신제품 등록

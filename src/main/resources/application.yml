@@ -39,6 +39,14 @@ ieum:
   rag:
     chunk-chars: ${RAG_CHUNK_CHARS:1200}
     top-k: ${RAG_TOP_K:5}
+    hybrid: ${RAG_HYBRID:true}                       # BM25 + dense(BGE-M3) RRF 융합. 임베딩 없으면 자동 BM25 폴백
+    rrf-k: ${RAG_RRF_K:60}
+  embedding:
+    provider: ${EMBEDDING_PROVIDER:auto}             # auto | openai_compat | stub
+    base-url: ${EMBEDDING_BASE_URL:}                 # 예: http://<tei-host>/v1 (BGE-M3 서빙). 비면 stub
+    api-key: ${EMBEDDING_API_KEY:}
+    model: ${EMBEDDING_MODEL:bge-m3}
+    timeout-seconds: ${EMBEDDING_TIMEOUT_SECONDS:60}
   doc:
     rhwp-path: ${RHWP_PATH:bin/rhwp}                 # HWP/HWPX 파서(rhwp export-text). 없으면 PATH의 rhwp
     rhwp-timeout-ms: ${RHWP_TIMEOUT_MS:30000}
