@@ -63,9 +63,11 @@ docker compose up -d --build   # → http://localhost:8088
 | POST | `/api/chat` | 채팅 (SSE 스트리밍) | user |
 | POST | `/api/summarize` | 요약 | user |
 | POST | `/api/draft` | 문서 초안 | user |
-| POST | `/api/docs` | 문서 색인(RAG) | user |
+| POST | `/api/docs` | 문서 색인(텍스트) | user |
+| POST | `/api/docs/upload` | 파일 업로드 색인(PDF/텍스트) | user |
 | GET | `/api/docs` | 문서 목록 | user |
 | POST | `/api/rag/query` | 근거기반 질의(인용) | user |
+| POST | `/api/review` | 규정검토(위반·수정문안, 다국어) | user |
 | GET | `/api/audit` | 감사로그 | **admin** |
 
 인증: `Authorization: Bearer <token>` 또는 `X-API-Key: <token>`.

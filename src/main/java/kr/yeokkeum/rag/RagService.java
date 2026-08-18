@@ -90,6 +90,47 @@ public class RagService {
         return new RagResult(r.text(), citations, true, gateway.model());
     }
 
+    /** 규정검토 — 작성물을 등록된 규정/근거에 비추어 위반·리스크 지적 + 수정문안(다국어). */
+    @Transactional(readOnly = true)
+    public RagResult review(String text, String lang) {
+        List<Chunk> all = chunkRepo.findAll();
+        if (all.isEmpty()) {
+            return new RagResult("등록된 규정/근거 문서가 없어 검토할 수 없습니다. 규정 문서를 먼저 등록하세요.",
+                    List.of(), false, gateway.model());
+        }
+        List<List<String>> docsTokens = new ArrayList<>(all.size());
+        for (Chunk c : all) docsTokens.add(Tokenizer.tokenize(c.getText()));
+        double[] scores = Bm25.scores(Tokenizer.tokenize(text), docsTokens);
+        Integer[] order = new Integer[all.size()];
+        for (int i = 0; i < order.length; i++) order[i] = i;
+        java.util.Arrays.sort(order, (a, b) -> Double.compare(scores[b], scores[a]));
+
+        int k = props.getRag().getTopK();
+        List<Citation> citations = new ArrayList<>();
+        StringBuilder ctx = new StringBuilder();
+        int rank = 0;
+        for (int oi : order) {
+            if (rank >= k || scores[oi] <= 0) break;
+            Chunk c = all.get(oi);
+            citations.add(new Citation(c.getFilename(), c.getIdx(),
+                    Math.round(scores[oi] * 10000.0) / 10000.0, snippet(c.getText())));
+            ctx.append("[근거 ").append(rank + 1).append("] (").append(c.getFilename())
+               .append(" #").append(c.getIdx()).append(")\n").append(c.getText()).append("\n\n");
+            rank++;
+        }
+        if (citations.isEmpty()) {
+            return new RagResult("작성물과 관련된 규정 근거를 찾지 못했습니다. 규정 문서를 등록했는지 확인하세요.",
+                    List.of(), false, gateway.model());
+        }
+        String langLine = (lang != null && !lang.isBlank()) ? ("\n답변 언어: " + lang) : "";
+        String system = "당신은 공공기관 규정검토 AI입니다. 아래 <근거>(법령·규정·지침)에 비추어 <작성물>의 "
+                + "위반·리스크를 항목별로 지적하고 각 항목에 수정문안을 제시하세요. 근거에 없는 사항은 지어내지 말고 "
+                + "'근거 범위 밖'이라고 명시하세요. 각 지적 끝에 [근거 n]을 표기하세요." + langLine
+                + "\n\n<근거>\n" + ctx + "</근거>";
+        ChatResult r = gateway.chat(List.of(ChatMessage.system(system), ChatMessage.user("<작성물>\n" + text)));
+        return new RagResult(r.text(), citations, true, gateway.model());
+    }
+
     private static String snippet(String text) {
         return text.length() <= 240 ? text : text.substring(0, 240);
     }
