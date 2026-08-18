@@ -1,41 +1,45 @@
 package kr.yeokkeum.auth;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Map;
+import java.util.List;
 import kr.yeokkeum.config.IeumProperties;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * RBAC — /api/** 게이트. secure-by-default: 토큰 미구성 시 CLOSED(명시 open만 개방).
- * /api/audit* = admin, 그 외 = user.
+ * 토큰 → 역할 해석 후 SecurityContext 인증 설정(Spring Security).
+ * Bearer/X-API-Key 로 admin/user 매핑, secure-by-default(토큰 미구성 시 none → 인증 없음 → 401).
+ * 컨트롤러 호환을 위해 {@link Principal} 을 요청 속성으로도 남긴다.
  */
 @Component
-public class AuthInterceptor implements HandlerInterceptor {
-
-    private static final Map<String, Integer> RANK = Map.of("none", 0, "user", 1, "admin", 2);
+public class TokenAuthFilter extends OncePerRequestFilter {
 
     private final IeumProperties props;
 
-    public AuthInterceptor(IeumProperties props) {
+    public TokenAuthFilter(IeumProperties props) {
         this.props = props;
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws ServletException, IOException {
         Principal p = resolve(req);
         req.setAttribute(Principal.ATTR, p);
-        String path = req.getRequestURI();
-        String minRole = path.startsWith("/api/audit") ? "admin" : "user";
-        if (RANK.getOrDefault(p.role(), 0) < RANK.get(minRole)) {
-            res.setStatus("none".equals(p.role()) ? HttpServletResponse.SC_UNAUTHORIZED : HttpServletResponse.SC_FORBIDDEN);
-            res.setContentType("application/json;charset=UTF-8");
-            res.getWriter().write("{\"detail\":\"unauthorized\"}");
-            return false;
+        if (!"none".equals(p.role())) {
+            var authority = new SimpleGrantedAuthority("ROLE_" + p.role().toUpperCase());
+            var auth = new UsernamePasswordAuthenticationToken(p, null, List.of(authority));
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
-        return true;
+        chain.doFilter(req, res);
     }
 
     private Principal resolve(HttpServletRequest req) {
@@ -62,8 +66,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private static boolean eq(String a, String b) {
         if (a == null || b == null || a.isEmpty() || b.isEmpty()) return false;
-        return MessageDigest.isEqual(a.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                b.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        return MessageDigest.isEqual(a.getBytes(StandardCharsets.UTF_8), b.getBytes(StandardCharsets.UTF_8));
     }
 
     private static String safe(String s) { return s == null ? "" : s.trim(); }

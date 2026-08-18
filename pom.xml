@@ -55,6 +55,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+        <!-- eGovFrame 5.0 정렬: Spring Security 6.5.x (토큰 RBAC, secure-by-default) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
         <!-- eGovFrame 5.0 AI layer: Spring AI (OpenAI 호환 ChatModel; base-url 로 국산/사내 게이트웨이) -->
         <dependency>
             <groupId>org.springframework.ai</groupId>

@@ -30,7 +30,7 @@
 | 아키텍처 | 표준 3-tier (Controller → Service → Repository) |
 | AI layer | **Spring AI 1.0.1** (OpenAI 호환 ChatModel) + 경량 HttpClient + 오프라인 stub |
 | 영속 | Spring Data JPA · H2(dev) / PostgreSQL(prod) |
-| 인증 | RBAC 인터셉터(→ Spring Security 6.5.5 이관 예정) |
+| 인증 | **Spring Security 6.5.x** 토큰 RBAC(무상태) · secure-by-default |
 | 프론트 | **Vue 3 + Vite + KRDS**(디지털정부 디자인시스템, `frontend/`) · KWCAG 2.2 지향 |
 | 배포 | 비root 컨테이너 · docker-compose |
 
