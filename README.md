@@ -31,7 +31,7 @@
 | AI layer | **Spring AI 1.0.1** (OpenAI 호환 ChatModel) + 경량 HttpClient + 오프라인 stub |
 | 영속 | Spring Data JPA · H2(dev) / PostgreSQL(prod) |
 | 인증 | RBAC 인터셉터(→ Spring Security 6.5.5 이관 예정) |
-| 프론트 | 현재 정적 콘솔 → **KRDS**(디지털정부 디자인시스템) + Vue 3 (Phase 1) |
+| 프론트 | **Vue 3 + Vite + KRDS**(디지털정부 디자인시스템, `frontend/`) · KWCAG 2.2 지향 |
 | 배포 | 비root 컨테이너 · docker-compose |
 
 정렬 상세 → [docs/스택-eGov5.0.md](docs/스택-eGov5.0.md)
@@ -83,7 +83,8 @@ src/main/java/kr/yeokkeum/
 ├── auth/      Principal · AuthInterceptor (RBAC, secure-by-default)
 ├── web/       Chat/Api/Audit/Public 컨트롤러 + DTO
 └── config/    IeumProperties · WebConfig · GatewayConfig · StartupChecks
-src/main/resources/static/index.html   ← 프론트(정적 콘솔; Phase1 Vue3+KRDS로 대체 예정)
+src/main/resources/static/index.html   ← 내장 정적 콘솔(백엔드 단독 데모용)
+frontend/                              ← Vue 3 + KRDS 프론트(권장 UI, npm run build) → frontend/README.md
 docs/                                  ← 공공 RFP 기능목록 · eGov5.0 정렬표
 ```
 
