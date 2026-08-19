@@ -6,8 +6,9 @@
     <title>엮음AI — 공공기관 업무보조 AI</title>
     <meta name="description" content="온프렘/내부망 벤더무관 게이트웨이 위 규정검토·문서작성·민원상담·감사로그. KRDS 기반." />
     <!-- 공식 KRDS(krds-uiux) 디자인 토큰 + HTML 컴포넌트 스타일 (public/krds, 상대 아이콘 경로 유지) -->
-    <link rel="stylesheet" href="/krds/css/token/krds_tokens.css" />
-    <link rel="stylesheet" href="/krds/css/component/component.css" />
+    <!-- %BASE_URL% = context-path(/yeokkeum/) 또는 / — 절대경로 대신 base 상대로 로드 -->
+    <link rel="stylesheet" href="%BASE_URL%krds/css/token/krds_tokens.css" />
+    <link rel="stylesheet" href="%BASE_URL%krds/css/component/component.css" />
     <!-- Pretendard GOV 서체는 src/styles/krds/fonts.css 에서 self-host(폐쇄망 대응) -->
   </head>
   <body>

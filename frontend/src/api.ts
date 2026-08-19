@@ -1,5 +1,11 @@
 // 엮음AI 백엔드 API 클라이언트. 토큰은 localStorage 보관, Bearer 헤더로 전송.
 
+// context-path(prod=/yeokkeum/) 아래 서빙 시 API 경로도 base 를 붙인다.
+const BASE = import.meta.env.BASE_URL // dev='/', prod='/yeokkeum/'
+function u(path: string): string {
+  return BASE.replace(/\/$/, '') + '/' + path.replace(/^\//, '')
+}
+
 const TOKEN_KEY = 'yk_token'
 
 export function getToken(): string {
@@ -20,7 +26,7 @@ async function errText(res: Response): Promise<string> {
 }
 
 export async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(u(path), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify(body)
@@ -30,7 +36,7 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 export async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(path, { headers: authHeader() })
+  const res = await fetch(u(path), { headers: authHeader() })
   if (!res.ok) throw new Error(await errText(res))
   return (await res.json()) as T
 }
@@ -38,7 +44,7 @@ export async function getJson<T>(path: string): Promise<T> {
 export async function uploadFile<T>(path: string, file: File): Promise<T> {
   const fd = new FormData()
   fd.append('file', file)
-  const res = await fetch(path, { method: 'POST', headers: authHeader(), body: fd })
+  const res = await fetch(u(path), { method: 'POST', headers: authHeader(), body: fd })
   if (!res.ok) throw new Error(await errText(res))
   return (await res.json()) as T
 }
@@ -50,7 +56,7 @@ export function streamChat(
   onDone: () => void,
   onError: (e: string) => void
 ): void {
-  fetch('/api/chat', {
+  fetch(u('/api/chat'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify({ message })
