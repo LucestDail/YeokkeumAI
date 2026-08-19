@@ -38,6 +38,7 @@ public class SecurityConfig {
                 // 인가로 충분). 재인가 시 응답 커밋 후 재거부 오류가 나므로.
                 .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
                 .requestMatchers("/api/audit", "/api/audit/**").hasRole("ADMIN")
+                .requestMatchers("/api/approvals", "/api/approvals/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().permitAll())
             .exceptionHandling(e -> e

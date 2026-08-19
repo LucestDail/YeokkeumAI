@@ -5,19 +5,21 @@ import ChatView from './views/ChatView.vue'
 import WriteView from './views/WriteView.vue'
 import ReviewView from './views/ReviewView.vue'
 import DocsView from './views/DocsView.vue'
+import AgentView from './views/AgentView.vue'
 import AuditView from './views/AuditView.vue'
 
-type TabKey = 'chat' | 'write' | 'review' | 'docs' | 'audit'
+type TabKey = 'chat' | 'write' | 'review' | 'docs' | 'agent' | 'audit'
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'chat', label: '대화' },
   { key: 'write', label: '문서 작성·요약' },
   { key: 'review', label: '규정검토' },
   { key: 'docs', label: '문서·검색' },
+  { key: 'agent', label: '에이전트·도구' },
   { key: 'audit', label: '감사로그' }
 ]
 
-const views = { chat: ChatView, write: WriteView, review: ReviewView, docs: DocsView, audit: AuditView }
+const views = { chat: ChatView, write: WriteView, review: ReviewView, docs: DocsView, agent: AgentView, audit: AuditView }
 
 const active = ref<TabKey>('chat')
 const current = computed(() => views[active.value])
