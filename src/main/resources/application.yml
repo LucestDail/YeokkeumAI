@@ -27,6 +27,9 @@ spring:
     multipart:
       max-file-size: ${UPLOAD_MAX_FILE_SIZE:20MB}
       max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:20MB}
+  # dev(H2)는 flyway 비활성 + ddl-auto=update. prod(PostgreSQL)은 application-prod.yml 에서 flyway+validate.
+  flyway:
+    enabled: false
 
 # 엮음AI 설정 (벤더무관 게이트웨이 / RBAC secure-by-default / RAG)
 ieum:
