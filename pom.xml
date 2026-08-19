@@ -61,6 +61,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!-- 오픈API 문서(Swagger UI) — RFP 단골·SIR 인터페이스 [EGOV-1] -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.8.13</version>
+        </dependency>
         <!-- eGovFrame 5.0 정렬: Spring Security 6.5.x (토큰 RBAC, secure-by-default) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
