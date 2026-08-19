@@ -45,7 +45,9 @@ function send() {
     <div class="fieldset mt16">
       <div class="form-group">
         <div class="form-tit"><label for="chat-out">응답</label></div>
-        <div class="output" id="chat-out" aria-live="polite">{{ output || '—' }}</div>
+        <!-- 스트리밍 중 토큰마다 announce 하면 스크린리더 폭주 → 본문은 aria-live off, 상태만 polite 로 안내 -->
+        <div class="output" id="chat-out" aria-live="off">{{ output || '—' }}</div>
+        <p class="sr-only" role="status" aria-live="polite">{{ busy ? '응답 생성 중입니다' : (output ? '응답 생성이 완료되었습니다' : '') }}</p>
       </div>
     </div>
   </section>
