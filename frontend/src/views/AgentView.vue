@@ -5,6 +5,7 @@ import { getJson, postJson } from '../api'
 interface ToolItem { name: string; description: string; risky: boolean }
 interface Approval { id: string; tool: string; args: Record<string, unknown>; requestedBy: string; createdAt: number }
 
+const instruction = ref('')
 const tools = ref<ToolItem[]>([])
 const selected = ref('')
 const query = ref('')
@@ -58,6 +59,18 @@ async function invoke() {
   } catch (e) { error.value = String(e) } finally { busy.value = false }
 }
 
+async function runAgent() {
+  if (!instruction.value.trim() || busy.value) return
+  error.value = ''; result.value = ''; busy.value = true
+  try {
+    const r = await postJson<{ status: string; result?: string; message?: string; chosenTool?: string; approvalId?: string }>(
+      '/api/agent', { instruction: instruction.value })
+    if (r.status === 'no_tool') result.value = 'ℹ ' + (r.message || '적절한 도구를 찾지 못했습니다.')
+    else if (r.status === 'pending_approval') { result.value = `⏸ [${r.chosenTool}] ${r.message} (승인ID: ${r.approvalId})`; await loadApprovals() }
+    else result.value = `[${r.chosenTool}] ` + (r.result || '(결과 없음)')
+  } catch (e) { error.value = String(e) } finally { busy.value = false }
+}
+
 async function decide(id: string, decision: 'approve' | 'reject') {
   busy.value = true; error.value = ''
   try {
@@ -80,7 +93,22 @@ onMounted(() => { loadTools(); loadApprovals() })
     </p>
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
 
+    <!-- 자연어 지시(LLM 도구 라우팅) -->
     <div class="fieldset">
+      <div class="form-group">
+        <div class="form-tit"><label for="agent-inst">자연어 지시</label></div>
+        <div class="form-conts row">
+          <input id="agent-inst" type="text" class="krds-input" v-model="instruction"
+            placeholder="예: 웹접근성 기준을 규정에서 찾아줘" @keyup.enter="runAgent" />
+          <div style="flex:0 0 auto"><button type="button" class="krds-btn primary" :disabled="busy" @click="runAgent">에이전트 실행</button></div>
+        </div>
+        <p class="form-hint">LLM 이 적합한 도구를 골라 실행합니다(변경 도구는 승인 필요).</p>
+      </div>
+    </div>
+
+    <details style="margin-bottom: var(--sp-16)">
+      <summary style="cursor:pointer; font-weight:700">직접 도구 실행(수동)</summary>
+    <div class="fieldset mt16">
       <div class="form-group">
         <div class="form-tit"><label for="tool-sel">도구</label></div>
         <div class="form-conts" style="max-width: 28rem">
@@ -106,9 +134,10 @@ onMounted(() => { loadTools(); loadApprovals() })
         <div class="form-conts"><textarea id="a-json" class="krds-input" v-model="argsJson" rows="3"></textarea></div>
       </div>
     </div>
-    <button type="button" class="krds-btn primary" :disabled="busy" @click="invoke">
+    <button type="button" class="krds-btn secondary" :disabled="busy" @click="invoke">
       {{ current?.risky ? '실행 요청(승인 필요)' : '실행' }}
     </button>
+    </details>
 
     <div v-if="result" class="output mt16" aria-live="polite">{{ result }}</div>
 

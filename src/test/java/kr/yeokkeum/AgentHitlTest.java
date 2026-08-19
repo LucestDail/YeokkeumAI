@@ -71,6 +71,15 @@ class AgentHitlTest {
     }
 
     @Test
+    void agentEndpointRoutesGracefully() {
+        // stub 게이트웨이는 JSON 도구결정을 못 내므로 no_tool 로 안전 처리(파싱 견고성 확인)
+        ResponseEntity<String> r = rest.exchange("/api/agent", HttpMethod.POST,
+                new HttpEntity<>(Map.of("instruction", "규정에서 웹접근성 기준 알려줘"), h("usr")), String.class);
+        assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(r.getBody()).contains("\"status\"");
+    }
+
+    @Test
     void rejectDoesNotExecute() {
         String docId = ingest("agent-reject.txt");
         ResponseEntity<String> inv = rest.exchange("/api/tools/doc_delete", HttpMethod.POST,

@@ -3,6 +3,7 @@ package kr.yeokkeum.web;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import kr.yeokkeum.agent.AgentService;
 import kr.yeokkeum.agent.ApprovalService;
 import kr.yeokkeum.agent.Tool;
 import kr.yeokkeum.agent.ToolRegistry;
@@ -27,11 +28,13 @@ public class AgentController {
     private final ToolRegistry registry;
     private final ApprovalService approvals;
     private final AuditService audit;
+    private final AgentService agent;
 
-    public AgentController(ToolRegistry registry, ApprovalService approvals, AuditService audit) {
+    public AgentController(ToolRegistry registry, ApprovalService approvals, AuditService audit, AgentService agent) {
         this.registry = registry;
         this.approvals = approvals;
         this.audit = audit;
+        this.agent = agent;
     }
 
     private static Principal principal(HttpServletRequest req) {
@@ -56,6 +59,33 @@ public class AgentController {
         if (tool == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "도구를 찾을 수 없습니다: " + name);
         }
+        return runTool(tool, args, p);
+    }
+
+    /** 자연어 지시 → LLM 도구 라우팅 → 실행/HITL. */
+    @PostMapping("/api/agent")
+    public Map<String, Object> agent(@RequestBody Map<String, String> body, HttpServletRequest req) {
+        Principal p = principal(req);
+        String instruction = body == null ? null : body.get("instruction");
+        if (instruction == null || instruction.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "instruction 이 필요합니다.");
+        }
+        AgentService.Decision d = agent.decide(instruction);
+        Tool tool = d.tool() == null ? null : registry.get(d.tool());
+        audit.record(p.actor(), p.role(), "agent", Map.of("tool", d.tool() == null ? "(none)" : d.tool()));
+        if (tool == null) {
+            return Map.of("status", "no_tool",
+                    "message", "적절한 도구를 찾지 못했습니다. 「대화」 탭을 사용하거나 요청을 구체화하세요.");
+        }
+        Map<String, Object> out = new java.util.LinkedHashMap<>(runTool(tool, d.args(), p));
+        out.put("chosenTool", d.tool());
+        out.put("args", d.args());
+        return out;
+    }
+
+    /** 도구 실행 공용 로직 — 안전=즉시, 위험=승인대기. */
+    private Map<String, Object> runTool(Tool tool, Map<String, Object> args, Principal p) {
+        String name = tool.name();
         audit.record(p.actor(), p.role(), "tool_invoke", Map.of("tool", name, "risky", tool.risky()));
         if (tool.risky()) {
             ApprovalService.Pending pending = approvals.create(name, args, p.actor());
