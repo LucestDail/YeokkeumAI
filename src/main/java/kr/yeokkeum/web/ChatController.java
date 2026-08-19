@@ -21,9 +21,15 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RestController
 public class ChatController {
 
+    private static final long SSE_TIMEOUT_MS = 300_000; // 5분 상한(무한 금지)
+
     private final LlmGateway gateway;
     private final AuditService audit;
-    private final ExecutorService exec = Executors.newCachedThreadPool();
+    // 유계 스레드풀 + CallerRuns 백프레셔 → 느린/끊긴 클라이언트 누적 시 스레드 고갈 방지 [STAB-1]
+    private final ExecutorService exec = new java.util.concurrent.ThreadPoolExecutor(
+            2, 16, 60L, java.util.concurrent.TimeUnit.SECONDS,
+            new java.util.concurrent.LinkedBlockingQueue<>(64),
+            new java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy());
 
     public ChatController(LlmGateway gateway, AuditService audit) {
         this.gateway = gateway;
@@ -38,7 +44,9 @@ public class ChatController {
         messages.add(ChatMessage.user(body.message()));
         audit.record(p.actor(), p.role(), "chat", Map.of("model", gateway.model(), "chars", body.message().length()));
 
-        SseEmitter emitter = new SseEmitter(0L);  // no timeout
+        SseEmitter emitter = new SseEmitter(SSE_TIMEOUT_MS);
+        emitter.onTimeout(emitter::complete);
+        emitter.onError(e -> { /* 클라이언트 종료/오류: 정리(이미터 자동 완료) */ });
         exec.execute(() -> {
             try {
                 gateway.stream(messages, 0.3, 1024, tok -> {
