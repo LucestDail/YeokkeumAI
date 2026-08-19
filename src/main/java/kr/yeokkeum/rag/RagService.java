@@ -68,6 +68,16 @@ public class RagService {
         return docRepo.findAllByOrderByCreatedAtDesc();
     }
 
+    /** 문서 전체 텍스트(청크 idx 순 결합). 없으면 null. */
+    @Transactional(readOnly = true)
+    public String documentText(String docId) {
+        List<Chunk> chunks = chunkRepo.findByDocIdOrderByIdxAsc(docId);
+        if (chunks.isEmpty()) return null;
+        StringBuilder sb = new StringBuilder();
+        for (Chunk c : chunks) sb.append(c.getText()).append('\n');
+        return sb.toString().strip();
+    }
+
     /** 문서 삭제(청크 포함) — 오등록·PII 문서 파기. 없으면 false. */
     @Transactional
     public boolean deleteDocument(String docId) {

@@ -80,6 +80,15 @@ class AgentHitlTest {
     }
 
     @Test
+    void dataAnalyzeToolRunsOnDocument() {
+        String docId = ingest("data.csv");
+        ResponseEntity<String> r = rest.exchange("/api/tools/data_analyze", HttpMethod.POST,
+                new HttpEntity<>(Map.of("docId", docId), h("usr")), String.class);
+        assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(r.getBody()).contains("\"status\":\"done\"").contains("\"tool\":\"data_analyze\"");
+    }
+
+    @Test
     void rejectDoesNotExecute() {
         String docId = ingest("agent-reject.txt");
         ResponseEntity<String> inv = rest.exchange("/api/tools/doc_delete", HttpMethod.POST,

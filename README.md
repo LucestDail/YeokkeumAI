@@ -106,7 +106,7 @@ docs/                                  ← 공공 RFP 기능목록 · eGov5.0 �
 
 - **Phase 0 (완료)** — 게이트웨이 · RAG · 요약/초안 · RBAC · 감사로그 · 온프렘 컨테이너
 - **Phase 1** — 규정검토 에이전트 · **HWP/PDF 파싱(완료)** · 다국어 상담 · **Vue 3 + KRDS 프론트(완료)** · Spring Security 이관(완료) · **BM25+BGE-M3 하이브리드 검색(완료)** · pgvector(대규모 시 예정, 현재 인메모리)
-- **Phase 2** — **업무 에이전트 + HITL 승인(완료, 내장 도구)** · MCP 도구 federation(예정) · 데이터 분석/이상탐지 · **오픈API(Swagger 완료)**/SSO
+- **Phase 2** — **업무 에이전트 + HITL 승인·자연어 라우팅(완료)** · MCP 도구 federation(예정) · **데이터 분석 도구(data_analyze, 슬라이스 완료)** · **오픈API(Swagger 완료)**/SSO · **UI 다국어(ko/en 완료)**
 - **Phase 3** — CSAP · N2SF · 개인정보(PIA) · 감리 산출물 · 국산모델 · DR/이중화
 - **Phase 4** — 디지털서비스몰/혁신제품 등록
 
