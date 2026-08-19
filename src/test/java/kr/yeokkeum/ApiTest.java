@@ -80,4 +80,22 @@ class ApiTest {
         assertThat(rest.exchange("/api/audit", HttpMethod.GET, new HttpEntity<>(headers("adm")), String.class)
                 .getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    void auditFilterAndCsvExport() {
+        post("/api/docs", Map.of("filename", "audit-a.txt", "text", "감사 이벤트 생성용"), "usr");
+        // action 필터
+        ResponseEntity<String> f = rest.exchange("/api/audit?action=ingest&limit=50", HttpMethod.GET,
+                new HttpEntity<>(headers("adm")), String.class);
+        assertThat(f.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(f.getBody()).contains("ingest");
+        // CSV 내보내기
+        ResponseEntity<String> c = rest.exchange("/api/audit/export?limit=50", HttpMethod.GET,
+                new HttpEntity<>(headers("adm")), String.class);
+        assertThat(c.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(c.getBody()).contains("ts,actor,role,action,detail");
+        // user 는 export 도 금지
+        assertThat(rest.exchange("/api/audit/export", HttpMethod.GET, new HttpEntity<>(headers("usr")), String.class)
+                .getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
 }

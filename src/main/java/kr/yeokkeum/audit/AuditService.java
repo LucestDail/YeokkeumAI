@@ -30,6 +30,37 @@ public class AuditService {
     }
 
     public List<AuditLog> list(int limit) {
-        return repo.findAllByOrderByTsDesc(PageRequest.of(0, Math.min(Math.max(limit, 1), 1000)));
+        return repo.findAllByOrderByTsDesc(PageRequest.of(0, clamp(limit)));
+    }
+
+    /** 필터 검색(action/actor/기간). blank/null 은 무시. */
+    public List<AuditLog> search(String action, String actor, Long from, Long to, int limit) {
+        String ac = (action == null || action.isBlank()) ? null : action;
+        String at = (actor == null || actor.isBlank()) ? null : actor;
+        long f = from == null ? 0L : from;
+        long t = to == null ? Long.MAX_VALUE : to;
+        return repo.search(ac, at, f, t, PageRequest.of(0, clamp(limit)));
+    }
+
+    /** 감사로그 CSV(내보내기). 헤더 + RFC4180 인용. */
+    public String toCsv(List<AuditLog> logs) {
+        StringBuilder sb = new StringBuilder("ts,actor,role,action,detail\n");
+        for (AuditLog a : logs) {
+            sb.append(a.getTs()).append(',')
+              .append(csv(a.getActor())).append(',')
+              .append(csv(a.getRole())).append(',')
+              .append(csv(a.getAction())).append(',')
+              .append(csv(a.getDetail())).append('\n');
+        }
+        return sb.toString();
+    }
+
+    private static String csv(String v) {
+        if (v == null) return "";
+        return "\"" + v.replace("\"", "\"\"") + "\"";
+    }
+
+    private static int clamp(int limit) {
+        return Math.min(Math.max(limit, 1), 1000);
     }
 }

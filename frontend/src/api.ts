@@ -62,6 +62,12 @@ export async function getJson<T>(path: string): Promise<T> {
   return (await res.json()) as T
 }
 
+export async function getBlob(path: string): Promise<Blob> {
+  const res = await fetch(u(path), { headers: authHeader() })
+  if (!res.ok) throw new Error(await errText(res))
+  return await res.blob()
+}
+
 export async function deleteJson<T>(path: string): Promise<T> {
   const res = await fetch(u(path), { method: 'DELETE', headers: authHeader() })
   if (!res.ok) throw new Error(await errText(res))
