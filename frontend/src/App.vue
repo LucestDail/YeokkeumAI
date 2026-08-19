@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getToken, setToken } from './api'
+import { setLocale } from './i18n'
 import ChatView from './views/ChatView.vue'
 import WriteView from './views/WriteView.vue'
 import ReviewView from './views/ReviewView.vue'
@@ -10,15 +12,9 @@ import AuditView from './views/AuditView.vue'
 
 type TabKey = 'chat' | 'write' | 'review' | 'docs' | 'agent' | 'audit'
 
-const tabs: { key: TabKey; label: string }[] = [
-  { key: 'chat', label: '대화' },
-  { key: 'write', label: '문서 작성·요약' },
-  { key: 'review', label: '규정검토' },
-  { key: 'docs', label: '문서·검색' },
-  { key: 'agent', label: '에이전트·도구' },
-  { key: 'audit', label: '감사로그' }
-]
+const { t, locale } = useI18n()
 
+const tabs: TabKey[] = ['chat', 'write', 'review', 'docs', 'agent', 'audit']
 const views = { chat: ChatView, write: WriteView, review: ReviewView, docs: DocsView, agent: AgentView, audit: AuditView }
 
 const active = ref<TabKey>('chat')
@@ -29,32 +25,39 @@ watch(token, (t) => setToken(t))
 </script>
 
 <template>
-  <a href="#main" class="skip-link">본문 바로가기</a>
+  <a href="#main" class="skip-link">{{ t('skip') }}</a>
 
   <header class="header">
     <div class="header-inner">
       <div class="brand">
-        <strong>엮음AI</strong>
-        <span>공공기관 업무보조 AI · 통제·책임성·연계</span>
+        <strong>{{ t('brand.name') }}</strong>
+        <span>{{ t('brand.tagline') }}</span>
       </div>
-      <nav class="appnav" aria-label="주요 기능">
+      <nav class="appnav" :aria-label="t('brand.name')">
         <button
-          v-for="t in tabs"
-          :key="t.key"
+          v-for="k in tabs"
+          :key="k"
           type="button"
-          :aria-current="active === t.key ? 'page' : undefined"
-          @click="active = t.key"
-        >{{ t.label }}</button>
+          :aria-current="active === k ? 'page' : undefined"
+          @click="active = k"
+        >{{ t('nav.' + k) }}</button>
       </nav>
     </div>
   </header>
 
   <div class="tokenbar">
     <div class="container">
-      <label for="token" class="tokenbar-label">API 토큰</label>
+      <label for="token" class="tokenbar-label">{{ t('token.label') }}</label>
       <input id="token" type="password" class="krds-input" v-model="token"
-        placeholder="Bearer 토큰 (secure-by-default: 미설정 시 API 차단)" autocomplete="off" />
-      <span class="muted">브라우저에만 저장됩니다</span>
+        :placeholder="t('token.placeholder')" autocomplete="off" />
+      <span class="muted">{{ t('token.note') }}</span>
+      <span style="margin-left:auto; display:flex; gap:var(--sp-4); align-items:center">
+        <span class="sr-only">{{ t('lang.label') }}</span>
+        <button type="button" class="krds-btn tertiary small" :aria-pressed="locale === 'ko'"
+          :style="locale === 'ko' ? 'font-weight:700' : ''" @click="setLocale('ko')">KO</button>
+        <button type="button" class="krds-btn tertiary small" :aria-pressed="locale === 'en'"
+          :style="locale === 'en' ? 'font-weight:700' : ''" @click="setLocale('en')">EN</button>
+      </span>
     </div>
   </div>
 
@@ -66,9 +69,8 @@ watch(token, (t) => setToken(t))
 
   <footer class="footer">
     <div class="container">
-      엮음AI — 온프렘/내부망 벤더무관 AI 게이트웨이 · 공식 KRDS 디자인시스템 기반 ·
-      <a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS</a> ·
-      웹접근성(KWCAG 2.2) 준수 지향
+      {{ t('footer.text') }} ·
+      <a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS</a>
     </div>
   </footer>
 </template>

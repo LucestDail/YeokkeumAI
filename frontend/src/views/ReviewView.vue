@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { postJson, type RagResult } from '../api'
 
+const { t } = useI18n()
 const text = ref('')
 const lang = ref('ko')
 const result = ref<RagResult | null>(null)
@@ -26,16 +28,13 @@ async function review() {
 
 <template>
   <section class="card" aria-labelledby="review-h">
-    <h2 id="review-h">규정검토</h2>
-    <p class="desc">
-      작성물을 <strong>등록된 규정·근거 문서</strong>에 비추어 위반·리스크를 항목별로 지적하고 수정문안을 제시합니다.
-      근거 없는 사항은 지어내지 않고 <em>근거 범위 밖</em>으로 명시합니다. (규정 문서는 「문서·검색」에서 먼저 등록)
-    </p>
+    <h2 id="review-h">{{ t('review.h') }}</h2>
+    <p class="desc">{{ t('review.desc') }}</p>
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
 
     <div class="fieldset">
       <div class="form-group">
-        <div class="form-tit"><label for="rev-lang">답변 언어</label></div>
+        <div class="form-tit"><label for="rev-lang">{{ t('review.lang') }}</label></div>
         <div class="form-conts" style="max-width: 20rem">
           <select id="rev-lang" class="krds-form-select" v-model="lang">
             <option v-for="l in langs" :key="l.v" :value="l.v">{{ l.label }}</option>
@@ -43,30 +42,28 @@ async function review() {
         </div>
       </div>
       <div class="form-group">
-        <div class="form-tit"><label for="rev-text">검토 대상(작성물)</label></div>
-        <div class="form-conts">
-          <textarea id="rev-text" class="krds-input" v-model="text" rows="6" placeholder="검토받을 공문·계획서·약관 등을 붙여넣으세요"></textarea>
-        </div>
+        <div class="form-tit"><label for="rev-text">{{ t('review.target') }}</label></div>
+        <div class="form-conts"><textarea id="rev-text" class="krds-input" v-model="text" rows="6" :placeholder="t('review.targetph')"></textarea></div>
       </div>
     </div>
-    <button type="button" class="krds-btn primary" :disabled="busy" @click="review">{{ busy ? '검토 중…' : '규정검토 실행' }}</button>
+    <button type="button" class="krds-btn primary" :disabled="busy" @click="review">{{ busy ? t('review.running') : t('review.run') }}</button>
 
     <div v-if="result" class="mt16" aria-live="polite">
       <p>
-        <span v-if="result.grounded" class="krds-badge bg-light-success">근거 기반</span>
-        <span v-else class="krds-badge bg-light-danger">근거 없음</span>
-        <span class="muted"> · 모델 {{ result.model }}</span>
+        <span v-if="result.grounded" class="krds-badge bg-light-success">{{ t('review.grounded') }}</span>
+        <span v-else class="krds-badge bg-light-danger">{{ t('review.ungrounded') }}</span>
+        <span class="muted"> · {{ t('review.model') }} {{ result.model }}</span>
       </p>
       <div class="fieldset">
         <div class="form-group">
-          <div class="form-tit"><label>검토 결과</label></div>
+          <div class="form-tit"><label>{{ t('review.resultLabel') }}</label></div>
           <div class="output">{{ result.answer }}</div>
         </div>
       </div>
       <div v-if="result.citations.length">
-        <p class="form-tit"><label>근거 인용 ({{ result.citations.length }})</label></p>
+        <p class="form-tit"><label>{{ t('review.citations') }} ({{ result.citations.length }})</label></p>
         <div v-for="(c, i) in result.citations" :key="i" class="cite">
-          <div class="meta">[근거 {{ i + 1 }}] {{ c.filename }} #{{ c.idx }} · score {{ c.score }}</div>
+          <div class="meta">[{{ i + 1 }}] {{ c.filename }} #{{ c.idx }} · score {{ c.score }}</div>
           <div>{{ c.snippet }}</div>
         </div>
       </div>
