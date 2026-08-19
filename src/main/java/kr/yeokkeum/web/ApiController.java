@@ -56,7 +56,8 @@ public class ApiController {
         ChatResult r = gateway.chat(List.of(
                 ChatMessage.system("다음 텍스트를 한국어로 3문장 이내로 요약하세요."),
                 ChatMessage.user(body.text())), 0.3, 512);
-        audit.record(p.actor(), p.role(), "summarize", Map.of("model", gateway.model(), "chars", body.text().length()));
+        audit.record(p.actor(), p.role(), "summarize",
+                Map.of("model", gateway.model(), "chars", body.text().length(), "tokens", r.usage()));
         return Map.of("summary", r.text(), "model", gateway.model());
     }
 
@@ -67,7 +68,8 @@ public class ApiController {
         ChatResult r = gateway.chat(List.of(
                 ChatMessage.system("당신은 공공기관 문서 작성 보조입니다. '" + kind + "' 초안을 한국어로 작성하세요."),
                 ChatMessage.user(body.brief())), 0.3, 1024);
-        audit.record(p.actor(), p.role(), "draft", Map.of("model", gateway.model(), "kind", kind));
+        audit.record(p.actor(), p.role(), "draft",
+                Map.of("model", gateway.model(), "kind", kind, "tokens", r.usage()));
         return Map.of("draft", r.text(), "kind", kind, "model", gateway.model());
     }
 

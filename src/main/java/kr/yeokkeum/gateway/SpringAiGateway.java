@@ -8,8 +8,10 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 
 /**
@@ -32,7 +34,7 @@ public class SpringAiGateway implements LlmGateway {
     @Override
     public String model() { return model; }
 
-    private Prompt toPrompt(List<ChatMessage> messages) {
+    private List<Message> toMessages(List<ChatMessage> messages) {
         List<Message> sm = new ArrayList<>();
         for (ChatMessage m : messages) {
             switch (m.role() == null ? "user" : m.role()) {
@@ -41,19 +43,41 @@ public class SpringAiGateway implements LlmGateway {
                 default -> sm.add(new UserMessage(m.content()));
             }
         }
-        return new Prompt(sm);
+        return sm;
+    }
+
+    private Prompt toPrompt(List<ChatMessage> messages, double temperature, int maxTokens) {
+        ChatOptions opts = ChatOptions.builder()
+                .temperature(temperature)
+                .maxTokens(maxTokens)
+                .model(model)
+                .build();
+        return new Prompt(toMessages(messages), opts);
     }
 
     @Override
     public ChatResult chat(List<ChatMessage> messages, double temperature, int maxTokens) {
-        ChatResponse resp = chatModel.call(toPrompt(messages));
+        ChatResponse resp = chatModel.call(toPrompt(messages, temperature, maxTokens));
         String text = resp.getResult() != null ? resp.getResult().getOutput().getText() : "";
-        return new ChatResult(text == null ? "" : text, Map.of());
+        return new ChatResult(text == null ? "" : text, usageOf(resp));
+    }
+
+    private static Map<String, Object> usageOf(ChatResponse resp) {
+        if (resp.getMetadata() == null || resp.getMetadata().getUsage() == null) return Map.of();
+        Usage u = resp.getMetadata().getUsage();
+        return Map.of(
+                "promptTokens", nz(u.getPromptTokens()),
+                "completionTokens", nz(u.getCompletionTokens()),
+                "totalTokens", nz(u.getTotalTokens()));
+    }
+
+    private static long nz(Integer v) {
+        return v == null ? 0L : v.longValue();
     }
 
     @Override
     public void stream(List<ChatMessage> messages, double temperature, int maxTokens, Consumer<String> onToken) {
-        chatModel.stream(toPrompt(messages)).toStream().forEach(cr -> {
+        chatModel.stream(toPrompt(messages, temperature, maxTokens)).toStream().forEach(cr -> {
             if (cr.getResult() == null) return;
             String piece = cr.getResult().getOutput().getText();
             if (piece != null && !piece.isEmpty()) onToken.accept(piece);
