@@ -104,7 +104,7 @@ main { padding: var(--sp-32) 0 var(--sp-40); }
 .tokenbar .tokenbar-label { font-weight: 700; font-size: var(--fs-sm); white-space: nowrap; }
 .tokenbar input { max-width: 32rem; }
 
-/* 인라인 알림(KRDS 미제공 → 토큰 기반 커스텀) */
+/* 인라인 폼 알림 — KRDS는 critical-alerts(배너)를 제공하나, 폼 하단 경량 알림엔 토큰 기반 커스텀 사용 */
 .app-alert { border-radius: var(--radius); padding: var(--sp-8) var(--sp-16); margin-bottom: var(--sp-16); font-size: var(--fs-sm); border: 1px solid transparent; }
 .app-alert.danger { background: var(--krds-color-light-danger-5); color: var(--krds-color-light-danger-60); border-color: var(--krds-color-light-danger-20); }
 .app-alert.info { background: var(--krds-primary-5); color: var(--krds-primary-60); border-color: var(--krds-color-light-primary-20); }

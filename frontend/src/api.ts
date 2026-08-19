@@ -20,9 +20,30 @@ function authHeader(): Record<string, string> {
   return t ? { Authorization: 'Bearer ' + t } : {}
 }
 
+const STATUS_MSG: Record<number, string> = {
+  400: '요청이 올바르지 않습니다.',
+  401: '인증이 필요합니다. 상단에 API 토큰을 입력하세요.',
+  403: '권한이 없습니다. 관리자 전용 기능일 수 있습니다.',
+  404: '대상을 찾을 수 없습니다.',
+  413: '파일이 허용 크기를 초과했습니다.',
+  415: '지원하지 않는 형식입니다.',
+  500: '서버 오류가 발생했습니다.',
+  503: '기능을 일시적으로 사용할 수 없습니다.'
+}
+
+// 상태코드별 한국어 안내 + 서버가 준 상세(한국어)만 덧붙임. raw HTTP 문자열 노출 방지.
 async function errText(res: Response): Promise<string> {
-  const body = await res.text().catch(() => '')
-  return `HTTP ${res.status}${body ? ' — ' + body.slice(0, 300) : ''}`
+  let detail = ''
+  const raw = await res.text().catch(() => '')
+  try {
+    const j = JSON.parse(raw) as { detail?: string; message?: string }
+    detail = j.detail || j.message || ''
+  } catch {
+    detail = raw
+  }
+  const base = STATUS_MSG[res.status] || `오류가 발생했습니다 (HTTP ${res.status})`
+  const skip = detail === 'unauthorized' || detail === 'forbidden' || !detail
+  return skip ? base : `${base} (${detail.slice(0, 200)})`
 }
 
 export async function postJson<T>(path: string, body: unknown): Promise<T> {
