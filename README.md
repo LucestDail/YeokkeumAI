@@ -57,15 +57,15 @@ docker compose up -d --build   # → http://localhost:8088
 
 ### HWP/HWPX 파서(rhwp)
 
-HWP/HWPX 업로드는 오픈소스 [rhwp](https://github.com/edwardkim/rhwp)(Rust·MIT)의 `export-text` 바이너리에 위임합니다. 리포에 macOS(arm64) 바이너리(`bin/rhwp`)를 동봉했습니다. **다른 플랫폼(리눅스 배포 등)은 재빌드 후 교체**하세요.
+HWP/HWPX 업로드는 오픈소스 [rhwp](https://github.com/edwardkim/rhwp)(Rust·MIT)의 `export-text` 바이너리에 위임합니다. 리포에 macOS(arm64) 바이너리(`bin/rhwp`)를 동봉했고, **리눅스 배포는 대상 플랫폼에서 빌드**합니다(Docker rust 이미지 사용 — Rust 미설치 환경 OK):
 
 ```bash
-# rhwp 클론 후
-cargo build --release --bin rhwp
-cp target/release/rhwp <yeokkeumai>/bin/rhwp     # 또는 RHWP_PATH 로 경로 지정
+deploy/build-rhwp-linux.sh              # 클론+빌드(Docker) → target/release/rhwp
+sudo install -m755 .../rhwp /opt/yeokkeum/bin/rhwp
+# /etc/yeokkeum.env 에  RHWP_PATH=/opt/yeokkeum/bin/rhwp
 ```
 
-바이너리가 현재 플랫폼에서 실행 불가하면 HWP 업로드만 503으로 명확히 실패하고(다른 기능 정상), 텍스트/PDF는 영향 없습니다.
+경로 우선순위: `RHWP_PATH` > `ieum.doc.rhwp-path`(bin/rhwp) > PATH. 바이너리가 현재 플랫폼에서 실행 불가하면 HWP 업로드만 503으로 명확히 실패하고(다른 기능 정상), 텍스트/PDF는 영향 없습니다. (.25 배포에는 리눅스 x86-64 바이너리를 `/opt/yeokkeum/bin/rhwp`로 설치·검증 완료)
 
 ## API
 
