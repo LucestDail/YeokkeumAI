@@ -1,6 +1,6 @@
 package kr.yeokkeum.gateway;
 
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.model.ChatModel;
@@ -18,8 +18,8 @@ public class GatewayConfig {
      * auto → 키 있으면 Spring AI, 없으면 stub.
      */
     @Bean
-    public LlmGateway llmGateway(IeumProperties props, ObjectProvider<ChatModel> chatModelProvider) {
-        IeumProperties.Llm cfg = props.getLlm();
+    public LlmGateway llmGateway(YeokkeumProperties props, ObjectProvider<ChatModel> chatModelProvider) {
+        YeokkeumProperties.Llm cfg = props.getLlm();
         String provider = cfg.getProvider() == null ? "auto" : cfg.getProvider().trim().toLowerCase();
         boolean hasKey = cfg.getApiKey() != null && !cfg.getApiKey().trim().isEmpty();
         ChatModel chatModel = chatModelProvider.getIfAvailable();

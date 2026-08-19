@@ -3,7 +3,7 @@ package kr.yeokkeum.rag;
 import java.util.ArrayList;
 import java.util.List;
 import kr.yeokkeum.common.Ids;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import kr.yeokkeum.doc.Chunk;
 import kr.yeokkeum.doc.ChunkRepository;
 import kr.yeokkeum.doc.Document;
@@ -27,10 +27,10 @@ public class RagService {
     private final ChunkRepository chunkRepo;
     private final LlmGateway gateway;
     private final EmbeddingGateway embedder;
-    private final IeumProperties props;
+    private final YeokkeumProperties props;
 
     public RagService(DocumentRepository docRepo, ChunkRepository chunkRepo,
-                      LlmGateway gateway, EmbeddingGateway embedder, IeumProperties props) {
+                      LlmGateway gateway, EmbeddingGateway embedder, YeokkeumProperties props) {
         this.docRepo = docRepo;
         this.chunkRepo = chunkRepo;
         this.gateway = gateway;

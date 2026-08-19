@@ -2,9 +2,9 @@ package kr.yeokkeum.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** 엮음AI 설정 바인딩 (prefix=ieum). */
-@ConfigurationProperties(prefix = "ieum")
-public class IeumProperties {
+/** 엮음AI 설정 바인딩 (prefix=yeokkeum). */
+@ConfigurationProperties(prefix = "yeokkeum")
+public class YeokkeumProperties {
 
     private Llm llm = new Llm();
     private Auth auth = new Auth();

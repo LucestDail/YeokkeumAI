@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +23,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class TokenAuthFilter extends OncePerRequestFilter {
 
-    private final IeumProperties props;
+    private final YeokkeumProperties props;
 
-    public TokenAuthFilter(IeumProperties props) {
+    public TokenAuthFilter(YeokkeumProperties props) {
         this.props = props;
     }
 
@@ -43,7 +43,7 @@ public class TokenAuthFilter extends OncePerRequestFilter {
     }
 
     private Principal resolve(HttpServletRequest req) {
-        IeumProperties.Auth a = props.getAuth();
+        YeokkeumProperties.Auth a = props.getAuth();
         String admin = safe(a.getAdminToken());
         String user = safe(a.getUserToken());
         String token = present(req);

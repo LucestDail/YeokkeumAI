@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  */
 class HwpExtractorTest {
 
-    private final IeumProperties props = new IeumProperties();
+    private final YeokkeumProperties props = new YeokkeumProperties();
 
     private boolean rhwpRunnable() {
         try {
@@ -40,7 +40,7 @@ class HwpExtractorTest {
 
     @Test
     void missingBinaryFailsClearly() {
-        IeumProperties p = new IeumProperties();
+        YeokkeumProperties p = new YeokkeumProperties();
         p.getDoc().setRhwpPath("/nonexistent/definitely-not-rhwp");
         HwpExtractor ex = new HwpExtractor(p);
         try {

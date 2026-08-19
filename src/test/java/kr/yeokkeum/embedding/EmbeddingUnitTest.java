@@ -3,7 +3,7 @@ package kr.yeokkeum.embedding;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import org.junit.jupiter.api.Test;
 
 class EmbeddingUnitTest {
@@ -19,7 +19,7 @@ class EmbeddingUnitTest {
 
     @Test
     void stubEmbedderIsDeterministicAndLexicallyMeaningful() {
-        IeumProperties.Embedding cfg = new IeumProperties().getEmbedding();
+        YeokkeumProperties.Embedding cfg = new YeokkeumProperties().getEmbedding();
         StubEmbeddingGateway ex = new StubEmbeddingGateway(cfg);
 
         float[] a1 = ex.embedOne("웹접근성 KWCAG 기준을 준수");
@@ -34,7 +34,7 @@ class EmbeddingUnitTest {
 
     @Test
     void batchPreservesOrder() {
-        StubEmbeddingGateway ex = new StubEmbeddingGateway(new IeumProperties().getEmbedding());
+        StubEmbeddingGateway ex = new StubEmbeddingGateway(new YeokkeumProperties().getEmbedding());
         List<float[]> out = ex.embed(List.of("가", "나", "다"));
         assertThat(out).hasSize(3);
         assertThat(out.get(0)).containsExactly(ex.embedOne("가"));

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +21,11 @@ public class OpenAiCompatGateway implements LlmGateway {
 
     private static final Logger log = LoggerFactory.getLogger(OpenAiCompatGateway.class);
 
-    private final IeumProperties.Llm cfg;
+    private final YeokkeumProperties.Llm cfg;
     private final ObjectMapper om = new ObjectMapper();
     private final HttpClient client;
 
-    public OpenAiCompatGateway(IeumProperties.Llm cfg) {
+    public OpenAiCompatGateway(YeokkeumProperties.Llm cfg) {
         this.cfg = cfg;
         this.client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(Math.min(cfg.getTimeoutSeconds(), 30))).build();

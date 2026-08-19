@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  이음(Ieum) AI 플랫폼 — Java 기준 스택.
+  엮음AI(YeokkeumAI) 공공 업무보조 AI 플랫폼 — Java 기준 스택.
   eGovFrame 4.3 호환 baseline: JDK 17 · Spring 기반 · 표준 3-tier(Controller-Service-Repository).
   영속은 JPA+H2(dev)/PostgreSQL(prod). 엄격 eGov 통합 시 MyBatis로 교체 가능(레이어 유지).
 -->

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 
 /**
  * OpenAI 호환 /embeddings — BGE-M3(HuggingFace TEI·vLLM·사내/국산 게이트웨이) 연결.
@@ -19,11 +19,11 @@ import kr.yeokkeum.config.IeumProperties;
  */
 public class OpenAiCompatEmbeddingGateway implements EmbeddingGateway {
 
-    private final IeumProperties.Embedding cfg;
+    private final YeokkeumProperties.Embedding cfg;
     private final ObjectMapper om = new ObjectMapper();
     private final HttpClient client;
 
-    public OpenAiCompatEmbeddingGateway(IeumProperties.Embedding cfg) {
+    public OpenAiCompatEmbeddingGateway(YeokkeumProperties.Embedding cfg) {
         this.cfg = cfg;
         this.client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(Math.min(cfg.getTimeoutSeconds(), 30))).build();

@@ -1,4 +1,4 @@
-ieum:
+yeokkeum:
   llm:
     provider: stub
   auth:
@@ -7,7 +7,7 @@ ieum:
     insecure-open-mode: false
 spring:
   datasource:
-    url: jdbc:h2:mem:ieumtest;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:yeokkeumtest;DB_CLOSE_DELAY=-1
   jpa:
     hibernate:
       ddl-auto: create-drop

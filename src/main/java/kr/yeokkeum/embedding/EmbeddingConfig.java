@@ -1,6 +1,6 @@
 package kr.yeokkeum.embedding;
 
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,8 @@ public class EmbeddingConfig {
     private static final Logger log = LoggerFactory.getLogger(EmbeddingConfig.class);
 
     @Bean
-    public EmbeddingGateway embeddingGateway(IeumProperties props) {
-        IeumProperties.Embedding cfg = props.getEmbedding();
+    public EmbeddingGateway embeddingGateway(YeokkeumProperties props) {
+        YeokkeumProperties.Embedding cfg = props.getEmbedding();
         String provider = cfg.getProvider() == null ? "auto" : cfg.getProvider().trim().toLowerCase();
         boolean hasEndpoint = cfg.getBaseUrl() != null && !cfg.getBaseUrl().isBlank();
 

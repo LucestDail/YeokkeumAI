@@ -2,7 +2,7 @@ package kr.yeokkeum.embedding;
 
 import java.util.ArrayList;
 import java.util.List;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import kr.yeokkeum.rag.Tokenizer;
 
 /**
@@ -14,7 +14,7 @@ public class StubEmbeddingGateway implements EmbeddingGateway {
 
     private final int dim;
 
-    public StubEmbeddingGateway(IeumProperties.Embedding cfg) {
+    public StubEmbeddingGateway(YeokkeumProperties.Embedding cfg) {
         this.dim = Math.max(16, cfg.getStubDimension());
     }
 

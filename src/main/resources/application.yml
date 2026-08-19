@@ -13,7 +13,7 @@ spring:
         options:
           model: ${LLM_MODEL:deepseek/deepseek-chat}
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:ieum;DB_CLOSE_DELAY=-1}
+    url: ${DB_URL:jdbc:h2:mem:yeokkeum;DB_CLOSE_DELAY=-1}
     username: ${DB_USER:sa}
     password: ${DB_PASSWORD:}
   jpa:
@@ -32,7 +32,7 @@ spring:
     enabled: false
 
 # 엮음AI 설정 (벤더무관 게이트웨이 / RBAC secure-by-default / RAG)
-ieum:
+yeokkeum:
   llm:
     provider: ${LLM_PROVIDER:auto}          # auto | openai_compat | stub
     base-url: ${LLM_BASE_URL:https://openrouter.ai/api/v1}

@@ -19,9 +19,9 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
-        "ieum.auth.admin-token=",
-        "ieum.auth.user-token=",
-        "ieum.auth.insecure-open-mode=false"
+        "yeokkeum.auth.admin-token=",
+        "yeokkeum.auth.user-token=",
+        "yeokkeum.auth.insecure-open-mode=false"
 })
 class SecureByDefaultTest {
 

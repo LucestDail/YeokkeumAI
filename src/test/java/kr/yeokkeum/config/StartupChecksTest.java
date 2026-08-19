@@ -8,8 +8,8 @@ import org.springframework.mock.env.MockEnvironment;
 
 class StartupChecksTest {
 
-    private IeumProperties propsWith(boolean insecure) {
-        IeumProperties p = new IeumProperties();
+    private YeokkeumProperties propsWith(boolean insecure) {
+        YeokkeumProperties p = new YeokkeumProperties();
         p.getAuth().setInsecureOpenMode(insecure);
         return p;
     }

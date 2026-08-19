@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
-import kr.yeokkeum.config.IeumProperties;
+import kr.yeokkeum.config.YeokkeumProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,13 +24,13 @@ public class HwpExtractor {
 
     private static final Logger log = LoggerFactory.getLogger(HwpExtractor.class);
 
-    private final IeumProperties props;
+    private final YeokkeumProperties props;
 
-    public HwpExtractor(IeumProperties props) {
+    public HwpExtractor(YeokkeumProperties props) {
         this.props = props;
     }
 
-    /** RHWP_PATH(env) > ieum.doc.rhwp-path(bin/rhwp) > PATH의 "rhwp". */
+    /** RHWP_PATH(env) > yeokkeum.doc.rhwp-path(bin/rhwp) > PATH의 "rhwp". */
     private String resolveBinary() {
         String env = System.getenv("RHWP_PATH");
         if (env != null && !env.isBlank()) return env.trim();

@@ -15,11 +15,11 @@ public class StartupChecks {
 
     private static final Logger log = LoggerFactory.getLogger(StartupChecks.class);
 
-    private final IeumProperties props;
+    private final YeokkeumProperties props;
     private final LlmGateway gateway;
     private final Environment env;
 
-    public StartupChecks(IeumProperties props, LlmGateway gateway, Environment env) {
+    public StartupChecks(YeokkeumProperties props, LlmGateway gateway, Environment env) {
         this.props = props;
         this.gateway = gateway;
         this.env = env;
@@ -37,7 +37,7 @@ public class StartupChecks {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onReady() {
-        IeumProperties.Auth a = props.getAuth();
+        YeokkeumProperties.Auth a = props.getAuth();
         boolean noTokens = isBlank(a.getAdminToken()) && isBlank(a.getUserToken());
         if (noTokens) {
             if (a.isInsecureOpenMode()) {
