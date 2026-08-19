@@ -102,12 +102,22 @@ public class ApiController {
         return res;
     }
 
-    /** 파일 업로드 색인 — PDF/텍스트 + HWP/HWPX(rhwp export-text). */
+    private static final java.util.Set<String> ALLOWED_EXT =
+            java.util.Set.of(".pdf", ".txt", ".md", ".hwp", ".hwpx");
+
+    /** 파일 업로드 색인 — PDF/텍스트 + HWP/HWPX(rhwp export-text). 크기 상한(multipart)·확장자 화이트리스트 적용. */
     @PostMapping("/api/docs/upload")
     public IngestResult upload(@RequestParam("file") MultipartFile file, HttpServletRequest req) {
         Principal p = principal(req);
+        if (file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "빈 파일입니다.");
+        }
         String filename = file.getOriginalFilename() == null ? "upload" : file.getOriginalFilename();
         String lower = filename.toLowerCase();
+        if (ALLOWED_EXT.stream().noneMatch(lower::endsWith)) {
+            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                    "지원하지 않는 형식입니다. 허용: PDF · 텍스트(.txt/.md) · HWP/HWPX");
+        }
         String text;
         try {
             if (lower.endsWith(".hwp") || lower.endsWith(".hwpx")) {

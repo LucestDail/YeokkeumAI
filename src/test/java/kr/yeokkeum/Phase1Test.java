@@ -74,4 +74,22 @@ class Phase1Test {
         assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(r.getBody()).contains("nChunks").contains("up.txt");
     }
+
+    @Test
+    void uploadRejectsDisallowedExtension() {
+        ByteArrayResource file = new ByteArrayResource("malware".getBytes(StandardCharsets.UTF_8)) {
+            @Override
+            public String getFilename() {
+                return "evil.exe";
+            }
+        };
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", file);
+        HttpHeaders h = new HttpHeaders();
+        h.setContentType(MediaType.MULTIPART_FORM_DATA);
+        h.setBearerAuth("usr");
+        ResponseEntity<String> r = rest.exchange("/api/docs/upload", HttpMethod.POST,
+                new HttpEntity<>(body, h), String.class);
+        assertThat(r.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
 }

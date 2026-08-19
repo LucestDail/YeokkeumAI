@@ -23,6 +23,10 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  servlet:
+    multipart:
+      max-file-size: ${UPLOAD_MAX_FILE_SIZE:20MB}
+      max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:20MB}
 
 # 엮음AI 설정 (벤더무관 게이트웨이 / RBAC secure-by-default / RAG)
 ieum:
