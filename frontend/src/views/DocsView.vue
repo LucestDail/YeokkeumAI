@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { postJson, getJson, uploadFile, type RagResult, type IngestResult, type DocItem } from '../api'
+import { postJson, getJson, uploadFile, deleteJson, type RagResult, type IngestResult, type DocItem } from '../api'
 
 const docs = ref<DocItem[]>([])
 const error = ref('')
@@ -39,6 +39,17 @@ async function uploadSelected() {
     const r = await uploadFile<IngestResult>('/api/docs/upload', f)
     notice.value = `업로드 색인 완료: ${r.filename} (${r.nChunks}청크)`
     if (fileInput.value) fileInput.value.value = ''
+    await loadDocs()
+  } catch (e) { error.value = String(e) } finally { busy.value = false }
+}
+
+async function removeDoc(d: DocItem) {
+  if (busy.value) return
+  if (!window.confirm(`'${d.filename}' 문서를 삭제할까요? (근거에서 제외됩니다)`)) return
+  error.value = ''; notice.value = ''; busy.value = true
+  try {
+    await deleteJson<{ deleted: string }>('/api/docs/' + encodeURIComponent(d.id))
+    notice.value = `삭제 완료: ${d.filename}`
     await loadDocs()
   } catch (e) { error.value = String(e) } finally { busy.value = false }
 }
@@ -93,13 +104,14 @@ onMounted(loadDocs)
     <div v-if="docs.length" class="krds-table-wrap">
       <table class="tbl col data">
         <caption class="sr-only">등록된 문서 목록: 문서명, 글자수, 청크수</caption>
-        <colgroup><col style="width:60%"><col><col></colgroup>
+        <colgroup><col style="width:55%"><col><col><col style="width:80px"></colgroup>
         <thead>
-          <tr><th scope="col">문서명</th><th scope="col">글자수</th><th scope="col">청크</th></tr>
+          <tr><th scope="col">문서명</th><th scope="col">글자수</th><th scope="col">청크</th><th scope="col">관리</th></tr>
         </thead>
         <tbody>
           <tr v-for="d in docs" :key="d.id">
             <td>{{ d.filename }}</td><td>{{ d.chars }}</td><td>{{ d.nChunks ?? '—' }}</td>
+            <td><button type="button" class="krds-btn tertiary small" :disabled="busy" @click="removeDoc(d)">삭제</button></td>
           </tr>
         </tbody>
       </table>

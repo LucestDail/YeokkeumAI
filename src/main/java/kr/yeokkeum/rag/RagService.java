@@ -68,6 +68,15 @@ public class RagService {
         return docRepo.findAllByOrderByCreatedAtDesc();
     }
 
+    /** 문서 삭제(청크 포함) — 오등록·PII 문서 파기. 없으면 false. */
+    @Transactional
+    public boolean deleteDocument(String docId) {
+        if (docId == null || !docRepo.existsById(docId)) return false;
+        chunkRepo.deleteByDocId(docId);
+        docRepo.deleteById(docId);
+        return true;
+    }
+
     @Transactional(readOnly = true)
     public RagResult query(String question, Integer topK) {
         Retrieved r = retrieve(question, topK != null ? topK : props.getRag().getTopK());

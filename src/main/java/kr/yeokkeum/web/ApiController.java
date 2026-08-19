@@ -21,7 +21,9 @@ import kr.yeokkeum.web.dto.RagQueryRequest;
 import kr.yeokkeum.web.dto.ReviewRequest;
 import kr.yeokkeum.web.dto.SummarizeRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,6 +82,18 @@ public class ApiController {
     @GetMapping("/api/docs")
     public Map<String, Object> listDocs(HttpServletRequest req) {
         return Map.of("items", rag.listDocuments());
+    }
+
+    /** 문서 삭제 — 오등록·PII 문서 파기(청크 포함). */
+    @DeleteMapping("/api/docs/{docId}")
+    public Map<String, Object> deleteDoc(@PathVariable String docId, HttpServletRequest req) {
+        Principal p = principal(req);
+        boolean removed = rag.deleteDocument(docId);
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "문서를 찾을 수 없습니다.");
+        }
+        audit.record(p.actor(), p.role(), "delete", Map.of("docId", docId));
+        return Map.of("deleted", docId);
     }
 
     @PostMapping("/api/rag/query")

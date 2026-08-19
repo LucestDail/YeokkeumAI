@@ -76,6 +76,20 @@ class Phase1Test {
     }
 
     @Test
+    void deleteDocumentRemovesIt() {
+        ResponseEntity<String> ing = rest.exchange("/api/docs", HttpMethod.POST, new HttpEntity<>(
+                Map.of("filename", "del.txt", "text", "삭제 대상 문서 내용."), userJson()), String.class);
+        String docId = ing.getBody().replaceAll(".*\"docId\":\"([0-9a-f]+)\".*", "$1");
+        ResponseEntity<String> del = rest.exchange("/api/docs/" + docId, HttpMethod.DELETE,
+                new HttpEntity<>(userJson()), String.class);
+        assertThat(del.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(del.getBody()).contains("deleted");
+        // 없는 문서 → 404
+        assertThat(rest.exchange("/api/docs/nonexistent", HttpMethod.DELETE,
+                new HttpEntity<>(userJson()), String.class).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     void uploadRejectsDisallowedExtension() {
         ByteArrayResource file = new ByteArrayResource("malware".getBytes(StandardCharsets.UTF_8)) {
             @Override
