@@ -58,6 +58,18 @@ ieum:
     rhwp-path: ${RHWP_PATH:bin/rhwp}                 # HWP/HWPX 파서(rhwp export-text). 없으면 PATH의 rhwp
     rhwp-timeout-ms: ${RHWP_TIMEOUT_MS:30000}
 
+# 관측성 [OBS-1] — health(readiness/liveness·DB)·info 만 노출, 상세는 비공개(정보노출 방지)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+
 logging:
   level:
     root: INFO
