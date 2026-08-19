@@ -119,7 +119,7 @@ public class ApiController {
     }
 
     private static final java.util.Set<String> ALLOWED_EXT =
-            java.util.Set.of(".pdf", ".txt", ".md", ".hwp", ".hwpx");
+            java.util.Set.of(".pdf", ".txt", ".md", ".hwp", ".hwpx", ".docx", ".xlsx");
 
     /** 파일 업로드 색인 — PDF/텍스트 + HWP/HWPX(rhwp export-text). 크기 상한(multipart)·확장자 화이트리스트 적용. */
     @PostMapping("/api/docs/upload")
@@ -132,7 +132,7 @@ public class ApiController {
         String lower = filename.toLowerCase();
         if (ALLOWED_EXT.stream().noneMatch(lower::endsWith)) {
             throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-                    "지원하지 않는 형식입니다. 허용: PDF · 텍스트(.txt/.md) · HWP/HWPX");
+                    "지원하지 않는 형식입니다. 허용: PDF · 텍스트(.txt/.md) · HWP/HWPX · DOCX/XLSX");
         }
         String text;
         try {

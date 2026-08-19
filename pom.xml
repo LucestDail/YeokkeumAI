@@ -71,6 +71,12 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-openai</artifactId>
         </dependency>
+        <!-- 문서 파싱: DOCX/XLSX(OOXML) 텍스트 추출 [DOC-1] -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.4.0</version>
+        </dependency>
         <!-- 문서 파싱: PDF 텍스트 추출(HWP는 로드맵) -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

@@ -76,12 +76,12 @@ onMounted(loadDocs)
       <div class="form-group">
         <div class="form-tit"><label for="up-file">파일 업로드</label></div>
         <div class="form-conts row">
-          <input id="up-file" ref="fileInput" type="file" class="krds-input" accept=".pdf,.txt,.md,.hwp,.hwpx" />
+          <input id="up-file" ref="fileInput" type="file" class="krds-input" accept=".pdf,.txt,.md,.hwp,.hwpx,.docx,.xlsx" />
           <div style="flex:0 0 auto">
             <button type="button" class="krds-btn secondary" :disabled="busy" @click="uploadSelected">업로드·색인</button>
           </div>
         </div>
-        <p class="form-hint">PDF · 텍스트(.txt/.md) · HWP/HWPX 지원</p>
+        <p class="form-hint">PDF · 텍스트(.txt/.md) · HWP/HWPX · DOCX/XLSX 지원</p>
       </div>
     </div>
 

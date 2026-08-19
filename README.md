@@ -19,7 +19,7 @@
 
 - **🔌 LLM 게이트웨이 (벤더무관)** — OpenAI 호환 엔드포인트면 무엇이든(OpenRouter · 사내 게이트웨이 · **국산 K-AI** · vLLM). `base-url`/`model`/`key` 로 핫스왑. 키 없으면 **오프라인 stub**로 동작(폐쇄망 데모/결정적 테스트).
 - **🔎 하이브리드 RAG (규정/지식 검색·검토)** — 문단 청킹 + **BM25(어휘) + BGE-M3 dense(의미)** 를 **RRF 융합** + **근거 인용**. 임베딩은 OpenAI 호환 `/embeddings`(BGE-M3/TEI·vLLM·국산 게이트웨이)로 벤더무관, 벡터는 인메모리 코사인(소규모 온프렘엔 벡터DB 불필요). **엔드포인트 없으면 오프라인 stub 임베더로 자동 폴백**(폐쇄망/결정적 테스트). 근거 없으면 정직 거절.
-- **📄 문서 작성·요약 + HWP** — 보고서/공문/RFP 초안·다문서 요약. 업로드 색인은 **PDF(PDFBox)·텍스트·HWP/HWPX**(오픈소스 [rhwp](https://github.com/edwardkim/rhwp) `export-text` 바이너리 위임) 지원.
+- **📄 문서 작성·요약 + HWP/오피스** — 보고서/공문/RFP 초안·다문서 요약. 업로드 색인은 **PDF(PDFBox)·텍스트·HWP/HWPX([rhwp](https://github.com/edwardkim/rhwp) 위임)·DOCX/XLSX(POI)** 지원.
 - **🧾 감사로그 + RBAC** — 모든 요청을 **누가·언제·무엇을·어떤 모델로** 기록. admin/user 역할, **secure-by-default**(토큰 없으면 CLOSED).
 
 ## 기술 스택 — eGovFrame 5.0 정렬
