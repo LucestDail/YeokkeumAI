@@ -8,7 +8,8 @@ const ko = {
     masthead: '이 사이트는 공공기관 업무보조 AI 데모입니다 (비공식)',
     home: '홈', fontSize: '글자 크기', smaller: '작게', normal: '보통', larger: '크게',
     footerNote: '온프렘/내부망 벤더무관 AI 게이트웨이 · 공식 KRDS 디자인시스템 준용 · 웹접근성(KWCAG 2.2) 지향',
-    copyright: '엮음AI · 비공식 데모 서비스'
+    copyright: '엮음AI · 비공식 데모 서비스',
+    privacy: '개인정보처리방침', terms: '이용약관', a11y: '웹접근성 안내'
   },
   nav: { chat: '대화', write: '문서 작성·요약', review: '규정검토', docs: '문서·검색', agent: '에이전트·도구', audit: '감사로그' },
   token: { label: 'API 토큰', placeholder: 'Bearer 토큰 (secure-by-default: 미설정 시 API 차단)', note: '브라우저에만 저장됩니다' },
@@ -68,7 +69,8 @@ const en: typeof ko = {
     masthead: 'This site is a public-sector work-assistant AI demo (unofficial)',
     home: 'Home', fontSize: 'Font size', smaller: 'Smaller', normal: 'Normal', larger: 'Larger',
     footerNote: 'On-prem vendor-neutral AI gateway · follows the official KRDS design system · web accessibility (KWCAG 2.2) oriented',
-    copyright: 'YeokkeumAI · unofficial demo'
+    copyright: 'YeokkeumAI · unofficial demo',
+    privacy: 'Privacy Policy', terms: 'Terms', a11y: 'Accessibility'
   },
   nav: { chat: 'Chat', write: 'Draft·Summarize', review: 'Compliance', docs: 'Docs·Search', agent: 'Agent·Tools', audit: 'Audit Log' },
   token: { label: 'API Token', placeholder: 'Bearer token (secure-by-default: API closed if unset)', note: 'Stored only in your browser' },

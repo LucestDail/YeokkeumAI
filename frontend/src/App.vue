@@ -123,7 +123,13 @@ onMounted(() => {
         <span class="emblem" aria-hidden="true">엮</span>
         <strong>{{ t('brand.name') }}</strong>
       </div>
-      <p>{{ t('chrome.footerNote') }} · <a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS</a></p>
+      <p>{{ t('chrome.footerNote') }}</p>
+      <div class="f-menu">
+        <a href="#" class="point">{{ t('chrome.privacy') }}</a>
+        <a href="#">{{ t('chrome.terms') }}</a>
+        <a href="#">{{ t('chrome.a11y') }}</a>
+        <a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS</a>
+      </div>
       <p class="f-copy">© {{ t('chrome.copyright') }}</p>
     </div>
   </footer>
