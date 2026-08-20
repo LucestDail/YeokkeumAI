@@ -1,24 +1,43 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { streamChat } from '../api'
 
+interface Msg { role: 'user' | 'ai'; text: string }
+
 const { t } = useI18n()
 const message = ref('')
-const output = ref('')
+const messages = ref<Msg[]>([])
 const busy = ref(false)
 const error = ref('')
+const threadEl = ref<HTMLElement | null>(null)
 
-function send() {
-  if (!message.value.trim() || busy.value) return
+const examples = [
+  '공공 웹 접근성 준수 항목을 알려줘',
+  '개인정보 수집 시 유의사항은?',
+  '전자정부법의 목적을 한 문장으로'
+]
+
+async function scrollBottom() {
+  await nextTick()
+  if (threadEl.value) threadEl.value.scrollTop = threadEl.value.scrollHeight
+}
+
+function send(text?: string) {
+  const q = (text ?? message.value).trim()
+  if (!q || busy.value) return
   error.value = ''
-  output.value = ''
+  messages.value.push({ role: 'user', text: q })
+  messages.value.push({ role: 'ai', text: '' })
+  const aiIdx = messages.value.length - 1
+  message.value = ''
   busy.value = true
+  scrollBottom()
   streamChat(
-    message.value,
-    (tok) => { output.value += tok },
-    () => { busy.value = false },
-    (e) => { error.value = e; busy.value = false }
+    q,
+    (tok) => { messages.value[aiIdx].text += tok; scrollBottom() },
+    () => { busy.value = false; scrollBottom() },
+    (e) => { error.value = e; messages.value.splice(aiIdx, 1); busy.value = false }
   )
 }
 </script>
@@ -30,26 +49,27 @@ function send() {
 
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
 
-    <div class="fieldset">
-      <div class="form-group">
-        <div class="form-tit"><label for="chat-msg">{{ t('chat.q') }}</label></div>
-        <div class="form-conts">
-          <textarea id="chat-msg" class="krds-input" v-model="message" rows="4"
-            :placeholder="t('chat.qph')" @keydown.ctrl.enter="send"></textarea>
+    <div class="chat-thread" ref="threadEl">
+      <div v-if="!messages.length" class="chat-empty">
+        <p class="lead">{{ t('chat.qph') }}</p>
+        <div class="chips">
+          <button v-for="ex in examples" :key="ex" type="button" class="chip" @click="send(ex)">{{ ex }}</button>
         </div>
       </div>
-    </div>
-
-    <button type="button" class="krds-btn primary" :disabled="busy" @click="send">
-      {{ busy ? t('chat.sending') : t('chat.send') }}
-    </button>
-
-    <div class="fieldset mt16">
-      <div class="form-group">
-        <div class="form-tit"><label for="chat-out">{{ t('chat.answer') }}</label></div>
-        <div class="output" id="chat-out" aria-live="off">{{ output || t('common.none') }}</div>
-        <p class="sr-only" role="status" aria-live="polite">{{ busy ? t('chat.genBusy') : (output ? t('chat.genDone') : '') }}</p>
+      <div v-for="(m, i) in messages" :key="i" class="msg" :class="m.role === 'user' ? 'msg-user' : 'msg-ai'">
+        <span class="msg-role">{{ m.role === 'user' ? '나' : t('brand.name') }}</span>
+        <div class="msg-body">{{ m.text || '…' }}</div>
       </div>
+    </div>
+    <p class="sr-only" role="status" aria-live="polite">{{ busy ? t('chat.genBusy') : '' }}</p>
+
+    <div class="chat-inputbar">
+      <label for="chat-msg" class="sr-only">{{ t('chat.q') }}</label>
+      <textarea id="chat-msg" class="krds-input" v-model="message" rows="2"
+        :placeholder="t('chat.qph')" @keydown.ctrl.enter="send()" @keydown.meta.enter="send()"></textarea>
+      <button type="button" class="krds-btn primary" :disabled="busy" @click="send()">
+        {{ busy ? t('chat.sending') : t('chat.send') }}
+      </button>
     </div>
   </section>
 </template>

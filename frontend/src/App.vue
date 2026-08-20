@@ -30,6 +30,7 @@ watch(token, (t) => setToken(t))
   <header class="header">
     <div class="header-inner">
       <div class="brand">
+        <span class="emblem" aria-hidden="true">엮</span>
         <strong>{{ t('brand.name') }}</strong>
         <span>{{ t('brand.tagline') }}</span>
       </div>
