@@ -58,7 +58,7 @@ h1, h2, h3, h4 { line-height: 1.5; margin: 0; }
 :focus-visible { outline: 3px solid var(--krds-primary-50); outline-offset: 2px; }
 
 /* ===== KRDS 서비스 패턴 레이아웃 셸 (마스트헤드→헤더→GNB→인증→브레드크럼→타이틀→본문→푸터) ===== */
-.container, .header-inner { max-width: 128rem; margin: 0 auto; padding: 0 var(--sp-24); }
+.container, .header-inner { max-width: 120rem; margin: 0 auto; padding: 0 var(--sp-24); }
 
 /* 1. 마스트헤드 (전자정부 식별 패턴 준용 — 데모는 정직 문구) */
 .masthead { background: var(--krds-gray-5); border-bottom: 1px solid var(--krds-gray-20); }
