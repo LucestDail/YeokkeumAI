@@ -46,6 +46,12 @@ public class YeokkeumProperties {
         private String adminToken = "";
         private String userToken = "";
         private boolean insecureOpenMode = false;
+        // 로그인(아이디/비번→토큰 교환). 게스트=사용자 토큰(비번 없이). 비번 공란=해당 로그인 비활성.
+        private boolean guestEnabled = true;
+        private String adminUser = "admin";
+        private String adminPass = "";
+        private String userUser = "user";
+        private String userPass = "";
 
         public String getAdminToken() { return adminToken; }
         public void setAdminToken(String v) { this.adminToken = v; }
@@ -53,6 +59,16 @@ public class YeokkeumProperties {
         public void setUserToken(String v) { this.userToken = v; }
         public boolean isInsecureOpenMode() { return insecureOpenMode; }
         public void setInsecureOpenMode(boolean v) { this.insecureOpenMode = v; }
+        public boolean isGuestEnabled() { return guestEnabled; }
+        public void setGuestEnabled(boolean v) { this.guestEnabled = v; }
+        public String getAdminUser() { return adminUser; }
+        public void setAdminUser(String v) { this.adminUser = v; }
+        public String getAdminPass() { return adminPass; }
+        public void setAdminPass(String v) { this.adminPass = v; }
+        public String getUserUser() { return userUser; }
+        public void setUserUser(String v) { this.userUser = v; }
+        public String getUserPass() { return userPass; }
+        public void setUserPass(String v) { this.userPass = v; }
     }
 
     public static class Rag {

@@ -94,6 +94,13 @@ h1, h2, h3, h4 { line-height: 1.5; margin: 0; }
 .authbar label { font-size: var(--fs-xs); font-weight: 700; color: var(--krds-gray-70); margin: 0; white-space: nowrap; }
 .authbar input { max-width: 34rem; flex: 1; font-size: var(--fs-sm); padding: 0.4rem var(--sp-16); }
 .authbar .muted { font-size: var(--fs-xs); }
+.authbar .login-inline { display: inline-flex; gap: var(--sp-4); align-items: center; }
+.authbar .login-inline .krds-input { max-width: 14rem; font-size: var(--fs-sm); padding: 0.4rem var(--sp-8); }
+
+/* 대화 모드 토글(정부24) */
+.chat-modes { display: inline-flex; gap: var(--sp-4); margin-bottom: var(--sp-16); border: 1px solid var(--krds-gray-30); border-radius: var(--radius-pill); padding: 0.2rem; }
+.chat-modes button { border: none; background: none; cursor: pointer; font-family: var(--font); font-size: var(--fs-sm); color: var(--krds-gray-70); padding: 0.4rem var(--sp-16); border-radius: var(--radius-pill); }
+.chat-modes button[aria-pressed="true"] { background: var(--krds-primary-50); color: #fff; font-weight: 700; }
 
 /* 4. 브레드크럼 보완 */
 .krds-breadcrumb-wrap { padding-top: var(--sp-16); }

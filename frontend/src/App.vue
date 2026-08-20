@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getToken, setToken } from './api'
+import { getToken, setToken, login } from './api'
 import { setLocale } from './i18n'
 import ChatView from './views/ChatView.vue'
 import WriteView from './views/WriteView.vue'
@@ -22,6 +22,32 @@ const current = computed(() => views[active.value])
 
 const token = ref(getToken())
 watch(token, (v) => setToken(v))
+
+// 로그인 상태
+const role = ref(localStorage.getItem('yk_role') || '')
+const showLogin = ref(false)
+const loginUser = ref('')
+const loginPass = ref('')
+const loginError = ref('')
+const showTokenField = ref(false)
+
+function persistRole(r: string) {
+  role.value = r
+  try { r ? localStorage.setItem('yk_role', r) : localStorage.removeItem('yk_role') } catch { /* ignore */ }
+}
+async function guestLogin() {
+  loginError.value = ''
+  try { const r = await login({ guest: true }); token.value = r.token; persistRole(r.role) }
+  catch (e) { loginError.value = String(e) }
+}
+async function doLogin() {
+  loginError.value = ''
+  try {
+    const r = await login({ username: loginUser.value, password: loginPass.value })
+    token.value = r.token; persistRole(r.role); showLogin.value = false; loginPass.value = ''
+  } catch { loginError.value = t('login.fail') }
+}
+function doLogout() { token.value = ''; persistRole(''); showLogin.value = false }
 
 // 글자 크기(KRDS 화면 설정) — html font-size(62.5% 기준) 조절
 const SCALES = [56.25, 62.5, 70]
@@ -86,12 +112,25 @@ onMounted(() => {
     </div>
   </nav>
 
-  <!-- 인증 토큰 유틸 -->
+  <!-- 인증(로그인) 유틸 -->
   <div class="authbar">
     <div class="container">
-      <label for="token">{{ t('token.label') }}</label>
-      <input id="token" type="password" class="krds-input" v-model="token" :placeholder="t('token.placeholder')" autocomplete="off" />
-      <span class="muted">{{ t('token.note') }}</span>
+      <template v-if="token">
+        <span class="muted">{{ t('login.loggedIn') }} · {{ role === 'admin' ? '관리자' : (role || '사용자') }}</span>
+        <button type="button" class="krds-btn small tertiary" @click="doLogout">{{ t('login.logout') }}</button>
+      </template>
+      <template v-else>
+        <button type="button" class="krds-btn small primary" @click="guestLogin">{{ t('login.guest') }}</button>
+        <button type="button" class="krds-btn small tertiary" @click="showLogin = !showLogin">{{ t('login.admin') }}</button>
+        <span v-if="showLogin" class="login-inline">
+          <input type="text" class="krds-input" v-model="loginUser" :placeholder="t('login.id')" autocomplete="username" />
+          <input type="password" class="krds-input" v-model="loginPass" :placeholder="t('login.pw')" autocomplete="current-password" @keyup.enter="doLogin" />
+          <button type="button" class="krds-btn small secondary" @click="doLogin">{{ t('login.submit') }}</button>
+        </span>
+        <button type="button" class="u-btn" @click="showTokenField = !showTokenField">{{ t('login.advanced') }}</button>
+        <input v-if="showTokenField" id="token" type="password" class="krds-input" v-model="token" :placeholder="t('token.placeholder')" autocomplete="off" style="max-width:26rem" />
+      </template>
+      <span v-if="loginError" class="muted" style="color:var(--krds-danger)">{{ loginError }}</span>
     </div>
   </div>
 

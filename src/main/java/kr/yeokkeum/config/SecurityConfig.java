@@ -37,6 +37,7 @@ public class SecurityConfig {
                 // SSE(SseEmitter) 등 async 요청: 내부 ASYNC/ERROR 재디스패치는 permit(초기 REQUEST
                 // 인가로 충분). 재인가 시 응답 커밋 후 재거부 오류가 나므로.
                 .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
+                .requestMatchers("/api/login").permitAll()
                 .requestMatchers("/api/audit", "/api/audit/**").hasRole("ADMIN")
                 .requestMatchers("/api/approvals", "/api/approvals/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")

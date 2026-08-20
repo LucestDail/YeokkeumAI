@@ -8,6 +8,17 @@ function u(path: string): string {
 
 const TOKEN_KEY = 'yk_token'
 
+export interface LoginResult { token: string; role: string; name: string }
+export async function login(payload: { guest?: boolean; username?: string; password?: string }): Promise<LoginResult> {
+  const res = await fetch(u('/api/login'), {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+  })
+  if (!res.ok) throw new Error(await errText(res))
+  const d = (await res.json()) as LoginResult
+  setToken(d.token)
+  return d
+}
+
 export function getToken(): string {
   return localStorage.getItem(TOKEN_KEY) ?? ''
 }

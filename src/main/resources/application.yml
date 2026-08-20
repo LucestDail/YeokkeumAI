@@ -43,6 +43,11 @@ yeokkeum:
     admin-token: ${ADMIN_TOKEN:}
     user-token: ${USER_TOKEN:}
     insecure-open-mode: ${INSECURE_OPEN_MODE:false}
+    guest-enabled: ${GUEST_ENABLED:true}          # 게스트 로그인=사용자 토큰(비번 없이)
+    admin-user: ${LOGIN_ADMIN_USER:admin}
+    admin-pass: ${LOGIN_ADMIN_PASS:}              # 공란=관리자 로그인 비활성
+    user-user: ${LOGIN_USER:user}
+    user-pass: ${LOGIN_USER_PASS:}
   rag:
     chunk-chars: ${RAG_CHUNK_CHARS:1200}
     top-k: ${RAG_TOP_K:5}

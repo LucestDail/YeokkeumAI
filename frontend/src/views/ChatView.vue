@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { streamChat } from '../api'
+import { streamChat, postJson } from '../api'
 
 interface Msg { role: 'user' | 'ai'; text: string }
 
 const { t } = useI18n()
 const message = ref('')
+const mode = ref<'normal' | 'gov24'>('normal')
 const messages = ref<Msg[]>([])
 const busy = ref(false)
 const error = ref('')
@@ -23,16 +24,24 @@ async function scrollBottom() {
   if (threadEl.value) threadEl.value.scrollTop = threadEl.value.scrollHeight
 }
 
-function send(text?: string) {
+async function send(text?: string) {
   const q = (text ?? message.value).trim()
   if (!q || busy.value) return
   error.value = ''
   messages.value.push({ role: 'user', text: q })
-  messages.value.push({ role: 'ai', text: '' })
+  messages.value.push({ role: 'ai', text: mode.value === 'gov24' ? t('chat.gov24Searching') : '' })
   const aiIdx = messages.value.length - 1
   message.value = ''
   busy.value = true
   scrollBottom()
+  if (mode.value === 'gov24') {
+    try {
+      const r = await postJson<{ result?: string }>('/api/tools/gov24_search', { query: q })
+      messages.value[aiIdx].text = r.result || '(결과 없음)'
+    } catch (e) { error.value = String(e); messages.value.splice(aiIdx, 1) }
+    finally { busy.value = false; scrollBottom() }
+    return
+  }
   streamChat(
     q,
     (tok) => { messages.value[aiIdx].text += tok; scrollBottom() },
@@ -45,6 +54,11 @@ function send(text?: string) {
 <template>
   <section class="card">
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
+
+    <div class="chat-modes" role="group" aria-label="mode">
+      <button type="button" :aria-pressed="mode === 'normal'" @click="mode = 'normal'">{{ t('chat.modeNormal') }}</button>
+      <button type="button" :aria-pressed="mode === 'gov24'" @click="mode = 'gov24'">{{ t('chat.modeGov24') }}</button>
+    </div>
 
     <div class="chat-thread" ref="threadEl">
       <div v-if="!messages.length" class="chat-empty">

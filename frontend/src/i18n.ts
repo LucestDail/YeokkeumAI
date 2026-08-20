@@ -13,6 +13,7 @@ const ko = {
   },
   nav: { chat: '대화', write: '문서 작성·요약', review: '규정검토', docs: '문서·검색', agent: '에이전트·도구', audit: '감사로그' },
   token: { label: 'API 토큰', placeholder: 'Bearer 토큰 (secure-by-default: 미설정 시 API 차단)', note: '브라우저에만 저장됩니다' },
+  login: { guest: '게스트로 시작', admin: '관리자 로그인', id: '아이디', pw: '비밀번호', submit: '로그인', logout: '로그아웃', loggedIn: '로그인됨', fail: '로그인 실패', advanced: '토큰 직접 입력' },
   lang: { label: '언어' },
   footer: { text: '엮음AI — 온프렘/내부망 벤더무관 AI 게이트웨이 · 공식 KRDS 디자인시스템 기반 · 웹접근성(KWCAG 2.2) 준수 지향' },
   skip: '본문 바로가기',
@@ -21,7 +22,8 @@ const ko = {
     h: '대화', desc: '벤더무관 게이트웨이를 통한 대화. 응답은 SSE로 실시간 스트리밍됩니다.',
     q: '질문', qph: '예: 공공 웹 접근성 준수 항목을 알려줘',
     send: '보내기 (Ctrl+Enter)', sending: '생성 중…', answer: '응답',
-    genBusy: '응답 생성 중입니다', genDone: '응답 생성이 완료되었습니다'
+    genBusy: '응답 생성 중입니다', genDone: '응답 생성이 완료되었습니다',
+    modeNormal: '일반 AI', modeGov24: '정부24 서비스 검색', gov24Searching: '정부24에서 검색 중…'
   },
   write: {
     h: '문서 작성·요약', desc: '보고서·공문 초안 작성과 긴 문서 요약. 모든 요청은 감사로그에 기록됩니다.',
@@ -74,6 +76,7 @@ const en: typeof ko = {
   },
   nav: { chat: 'Chat', write: 'Draft·Summarize', review: 'Compliance', docs: 'Docs·Search', agent: 'Agent·Tools', audit: 'Audit Log' },
   token: { label: 'API Token', placeholder: 'Bearer token (secure-by-default: API closed if unset)', note: 'Stored only in your browser' },
+  login: { guest: 'Start as guest', admin: 'Admin login', id: 'ID', pw: 'Password', submit: 'Login', logout: 'Logout', loggedIn: 'Logged in', fail: 'Login failed', advanced: 'Enter token directly' },
   lang: { label: 'Language' },
   footer: { text: 'YeokkeumAI — on-prem vendor-neutral AI gateway · built on the official KRDS design system · web accessibility (KWCAG 2.2) oriented' },
   skip: 'Skip to content',
@@ -82,7 +85,8 @@ const en: typeof ko = {
     h: 'Chat', desc: 'Chat via the vendor-neutral gateway. Responses stream in real time over SSE.',
     q: 'Question', qph: 'e.g., Tell me the public web accessibility requirements',
     send: 'Send (Ctrl+Enter)', sending: 'Generating…', answer: 'Response',
-    genBusy: 'Generating response', genDone: 'Response complete'
+    genBusy: 'Generating response', genDone: 'Response complete',
+    modeNormal: 'General AI', modeGov24: 'Gov24 service search', gov24Searching: 'Searching Gov24…'
   },
   write: {
     h: 'Draft · Summarize', desc: 'Draft reports/official letters and summarize long documents. All requests are audited.',
