@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getJson, postJson } from '../api'
+import { renderMarkdown } from '../md'
 
 interface ToolItem { name: string; description: string; risky: boolean }
 interface Approval { id: string; tool: string; args: Record<string, unknown>; requestedBy: string; createdAt: number }
@@ -126,7 +127,7 @@ onMounted(() => { loadTools(); loadApprovals() })
       </button>
     </details>
 
-    <div v-if="result" class="output mt16" aria-live="polite">{{ result }}</div>
+    <div v-if="result" class="output md mt16" aria-live="polite" v-html="renderMarkdown(result)"></div>
 
     <hr style="border:none; border-top:1px solid var(--krds-gray-20); margin: var(--sp-24) 0" />
     <h3 style="font-size: var(--fs-h4); font-weight:700; margin-bottom: var(--sp-8)">{{ t('agent.hitlH') }}</h3>

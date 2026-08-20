@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { postJson } from '../api'
+import { renderMarkdown } from '../md'
 
 const { t } = useI18n()
 const tab = ref<'summarize' | 'draft'>('summarize')
@@ -61,7 +62,7 @@ async function makeDraft() {
           <div class="fieldset mt16">
             <div class="form-group">
               <div class="form-tit"><label for="sum-out">{{ t('write.sumOut') }}</label></div>
-              <div class="output" id="sum-out" aria-live="polite">{{ summary || t('common.none') }}</div>
+              <div class="output md" id="sum-out" aria-live="polite" v-html="summary ? renderMarkdown(summary) : t('common.none')"></div>
             </div>
           </div>
         </section>
@@ -81,7 +82,7 @@ async function makeDraft() {
           <div class="fieldset mt16">
             <div class="form-group">
               <div class="form-tit"><label for="draft-out">{{ t('write.draftOut') }}</label></div>
-              <div class="output" id="draft-out" aria-live="polite">{{ draft || t('common.none') }}</div>
+              <div class="output md" id="draft-out" aria-live="polite" v-html="draft ? renderMarkdown(draft) : t('common.none')"></div>
             </div>
           </div>
         </section>

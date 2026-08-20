@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { postJson, getJson, uploadFile, deleteJson, type RagResult, type IngestResult, type DocItem } from '../api'
+import { renderMarkdown } from '../md'
 
 const { t } = useI18n()
 const docs = ref<DocItem[]>([])
@@ -132,7 +133,7 @@ onMounted(loadDocs)
         <span v-if="result.grounded" class="krds-badge bg-light-success">{{ t('docs.grounded') }}</span>
         <span v-else class="krds-badge bg-light-danger">{{ t('docs.ungrounded') }}</span>
       </p>
-      <div class="output">{{ result.answer }}</div>
+      <div class="output md" v-html="renderMarkdown(result.answer)"></div>
       <div v-for="(c, i) in result.citations" :key="i" class="cite">
         <div class="meta">[{{ i + 1 }}] {{ c.filename }} #{{ c.idx }} · score {{ c.score }}</div>
         <div>{{ c.snippet }}</div>

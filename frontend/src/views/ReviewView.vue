@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { postJson, type RagResult } from '../api'
+import { renderMarkdown } from '../md'
 
 const { t } = useI18n()
 const text = ref('')
@@ -55,7 +56,7 @@ async function review() {
       <div class="fieldset">
         <div class="form-group">
           <div class="form-tit"><label>{{ t('review.resultLabel') }}</label></div>
-          <div class="output">{{ result.answer }}</div>
+          <div class="output md" v-html="renderMarkdown(result.answer)"></div>
         </div>
       </div>
       <div v-if="result.citations.length">

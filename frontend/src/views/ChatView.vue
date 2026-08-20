@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { streamChat, postJson } from '../api'
+import { streamChat, streamSSE } from '../api'
+import { renderMarkdown } from '../md'
 
 interface Msg { role: 'user' | 'ai'; text: string }
 
@@ -34,20 +35,19 @@ async function send(text?: string) {
   message.value = ''
   busy.value = true
   scrollBottom()
+  let started = false
+  const onTok = (tok: string) => {
+    if (!started) { messages.value[aiIdx].text = ''; started = true } // 진행상태 placeholder 제거
+    messages.value[aiIdx].text += tok; scrollBottom()
+  }
+  const onDone = () => { busy.value = false; scrollBottom() }
+  const onErr = (e: string) => { error.value = e; messages.value.splice(aiIdx, 1); busy.value = false }
   if (mode.value === 'gov24') {
-    try {
-      const r = await postJson<{ result?: string }>('/api/tools/gov24_search', { query: q })
-      messages.value[aiIdx].text = r.result || '(결과 없음)'
-    } catch (e) { error.value = String(e); messages.value.splice(aiIdx, 1) }
-    finally { busy.value = false; scrollBottom() }
+    streamSSE('/api/gov24/chat', { query: q }, onTok, onDone, onErr,
+      (p) => { if (!started) messages.value[aiIdx].text = p + ' …' })
     return
   }
-  streamChat(
-    q,
-    (tok) => { messages.value[aiIdx].text += tok; scrollBottom() },
-    () => { busy.value = false; scrollBottom() },
-    (e) => { error.value = e; messages.value.splice(aiIdx, 1); busy.value = false }
-  )
+  streamChat(q, onTok, onDone, onErr)
 }
 </script>
 
@@ -69,7 +69,8 @@ async function send(text?: string) {
       </div>
       <div v-for="(m, i) in messages" :key="i" class="msg" :class="m.role === 'user' ? 'msg-user' : 'msg-ai'">
         <span class="msg-role">{{ m.role === 'user' ? '나' : t('brand.name') }}</span>
-        <div class="msg-body">{{ m.text || '…' }}</div>
+        <div v-if="m.role === 'ai'" class="msg-body md" v-html="renderMarkdown(m.text) || '…'"></div>
+        <div v-else class="msg-body">{{ m.text }}</div>
       </div>
     </div>
     <p class="sr-only" role="status" aria-live="polite">{{ busy ? t('chat.genBusy') : '' }}</p>

@@ -93,17 +93,19 @@ export async function uploadFile<T>(path: string, file: File): Promise<T> {
   return (await res.json()) as T
 }
 
-/** /api/chat SSE 스트리밍. data:{"t":tok} 프레임 파싱, data:[DONE] 종료. */
-export function streamChat(
-  message: string,
+/** 범용 SSE 스트리밍. data:{"t":tok}=토큰, data:{"p":..}=진행상태, data:[DONE]=종료. */
+export function streamSSE(
+  path: string,
+  body: unknown,
   onToken: (t: string) => void,
   onDone: () => void,
-  onError: (e: string) => void
+  onError: (e: string) => void,
+  onProgress?: (p: string) => void
 ): void {
-  fetch(u('/api/chat'), {
+  fetch(u(path), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeader() },
-    body: JSON.stringify({ message })
+    body: JSON.stringify(body)
   })
     .then(async (res) => {
       if (!res.ok || !res.body) {
@@ -129,8 +131,9 @@ export function streamChat(
             return
           }
           try {
-            const o = JSON.parse(data) as { t?: string }
+            const o = JSON.parse(data) as { t?: string; p?: string }
             if (o.t) onToken(o.t)
+            else if (o.p && onProgress) onProgress(o.p)
           } catch {
             /* keep-alive/비JSON 프레임 무시 */
           }
@@ -139,6 +142,16 @@ export function streamChat(
       onDone()
     })
     .catch((e: unknown) => onError(String(e)))
+}
+
+/** /api/chat SSE(일반 대화). */
+export function streamChat(
+  message: string,
+  onToken: (t: string) => void,
+  onDone: () => void,
+  onError: (e: string) => void
+): void {
+  streamSSE('/api/chat', { message }, onToken, onDone, onError)
 }
 
 // ── 응답 타입 ──

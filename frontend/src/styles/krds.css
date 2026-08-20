@@ -160,6 +160,25 @@ main { padding: 0 0 var(--sp-40); }
 .msg-user .msg-body { background: var(--krds-primary-50); color: #fff; border-bottom-right-radius: 2px; }
 .msg-ai { align-self: flex-start; }
 .msg-ai .msg-body { background: var(--krds-gray-0); border: 1px solid var(--krds-gray-20); border-bottom-left-radius: 2px; }
+/* 렌더된 마크다운(AI 답변) */
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h1, .md h2, .md h3, .md h4, .md h5 { font-weight: 700; line-height: 1.4; margin: var(--sp-16) 0 var(--sp-8); }
+.md h3 { font-size: var(--fs-h4); }
+.md h4 { font-size: var(--fs-body); }
+.md h5 { font-size: var(--fs-sm); }
+.md p { margin: var(--sp-8) 0; }
+.md ul, .md ol { margin: var(--sp-8) 0; padding-left: 2rem; }
+.md li { margin: 0.2rem 0; }
+.md strong { font-weight: 700; }
+.md a { color: var(--krds-primary-60); text-underline-offset: 0.3rem; }
+.md code { background: var(--krds-gray-5); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.95em; }
+.md pre { background: var(--krds-gray-5); padding: var(--sp-16); border-radius: var(--radius); overflow-x: auto; }
+.md hr { border: none; border-top: 1px solid var(--krds-gray-20); margin: var(--sp-16) 0; }
+.md table { width: 100%; border-collapse: collapse; margin: var(--sp-8) 0; }
+.md th, .md td { border: 1px solid var(--krds-gray-20); padding: var(--sp-8); text-align: left; }
+/* AI 말풍선 내부 마크다운은 흰 배경이라 링크/코드 대비 유지 */
+
 .chat-inputbar { display: flex; gap: var(--sp-8); align-items: flex-end; }
 .chat-inputbar textarea { flex: 1; min-height: 5.2rem; }
 .chat-inputbar .krds-btn { flex: 0 0 auto; align-self: stretch; }
