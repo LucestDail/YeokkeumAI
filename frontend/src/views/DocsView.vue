@@ -68,9 +68,7 @@ onMounted(loadDocs)
 </script>
 
 <template>
-  <section class="card" aria-labelledby="docs-h">
-    <h2 id="docs-h">{{ t('docs.h') }}</h2>
-    <p class="desc">{{ t('docs.desc') }}</p>
+  <section class="card">
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
     <div v-if="notice" class="app-alert info" role="status">{{ notice }}</div>
 

@@ -27,9 +27,7 @@ async function review() {
 </script>
 
 <template>
-  <section class="card" aria-labelledby="review-h">
-    <h2 id="review-h">{{ t('review.h') }}</h2>
-    <p class="desc">{{ t('review.desc') }}</p>
+  <section class="card">
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
 
     <div class="fieldset">

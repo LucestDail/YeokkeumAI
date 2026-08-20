@@ -82,9 +82,7 @@ onMounted(() => { loadTools(); loadApprovals() })
 </script>
 
 <template>
-  <section class="card" aria-labelledby="agent-h">
-    <h2 id="agent-h">{{ t('agent.h') }}</h2>
-    <p class="desc">{{ t('agent.desc') }}</p>
+  <section class="card">
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
 
     <div class="fieldset">

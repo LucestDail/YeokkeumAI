@@ -43,10 +43,7 @@ function send(text?: string) {
 </script>
 
 <template>
-  <section class="card" aria-labelledby="chat-h">
-    <h2 id="chat-h">{{ t('chat.h') }}</h2>
-    <p class="desc">{{ t('chat.desc') }}</p>
-
+  <section class="card">
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
 
     <div class="chat-thread" ref="threadEl">

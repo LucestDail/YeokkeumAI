@@ -49,9 +49,7 @@ onMounted(load)
 </script>
 
 <template>
-  <section class="card" aria-labelledby="audit-h">
-    <h2 id="audit-h">{{ t('audit.h') }}</h2>
-    <p class="desc">{{ t('audit.desc') }}</p>
+  <section class="card">
     <div v-if="error" class="app-alert danger" role="alert">{{ error }}</div>
 
     <div class="fieldset">

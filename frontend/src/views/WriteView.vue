@@ -34,10 +34,7 @@ async function makeDraft() {
 </script>
 
 <template>
-  <section class="card" aria-labelledby="write-h">
-    <h2 id="write-h">{{ t('write.h') }}</h2>
-    <p class="desc">{{ t('write.desc') }}</p>
-
+  <section class="card">
     <div class="krds-tab-area">
       <div class="tab line full">
         <ul role="tablist" :aria-label="t('write.h')">
