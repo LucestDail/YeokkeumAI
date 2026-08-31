@@ -63,9 +63,22 @@ public class RagService {
         return new IngestResult(docId, filename, chunks.size());
     }
 
+    /**
+     * 문서 목록(페이지네이션) — createdAt 내림차순. 전량 로드(OOM) 방지.
+     * limit 는 1..200 로 클램프, offset 은 페이지 경계로 매핑(offset/limit).
+     */
     @Transactional(readOnly = true)
-    public List<Document> listDocuments() {
-        return docRepo.findAllByOrderByCreatedAtDesc();
+    public List<Document> listDocuments(int limit, int offset) {
+        int size = Math.max(1, Math.min(limit, 200));
+        int page = Math.max(0, offset) / size;
+        return docRepo.findAllByOrderByCreatedAtDesc(
+                org.springframework.data.domain.PageRequest.of(page, size)).getContent();
+    }
+
+    /** 전체 문서 수(페이지네이션 total 표시용). */
+    @Transactional(readOnly = true)
+    public long countDocuments() {
+        return docRepo.count();
     }
 
     /** 문서 전체 텍스트(청크 idx 순 결합). 없으면 null. */

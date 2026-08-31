@@ -73,6 +73,25 @@ class ApiTest {
     }
 
     @Test
+    void listDocsPaginates() {
+        // 여러 문서 등록 후 limit/offset 페이지네이션 동작 확인(전량 로드 방지).
+        for (int i = 0; i < 3; i++) {
+            post("/api/docs", Map.of("filename", "page-" + i + ".txt", "text", "페이지네이션 테스트 문서 " + i), "usr");
+        }
+        ResponseEntity<String> r = rest.exchange("/api/docs?limit=2&offset=0", HttpMethod.GET,
+                new HttpEntity<>(headers("usr")), String.class);
+        assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
+        // total·limit·offset 메타가 응답에 포함되고 items 는 limit(2) 이하
+        assertThat(r.getBody()).contains("\"total\":").contains("\"limit\":2").contains("\"offset\":0");
+        // 두 번째 페이지도 200(경계 안전)
+        assertThat(rest.exchange("/api/docs?limit=2&offset=2", HttpMethod.GET,
+                new HttpEntity<>(headers("usr")), String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
+        // 과대 limit 은 클램프(500→200)되어도 200
+        assertThat(rest.exchange("/api/docs?limit=500", HttpMethod.GET,
+                new HttpEntity<>(headers("usr")), String.class).getBody()).contains("\"limit\":200");
+    }
+
+    @Test
     void auditIsAdminOnly() {
         // user 는 감사로그 접근 불가(403), admin 은 200
         assertThat(rest.exchange("/api/audit", HttpMethod.GET, new HttpEntity<>(headers("usr")), String.class)

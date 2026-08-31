@@ -17,6 +17,8 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 /**
  * 업로드 문서에서 텍스트 추출. PDF=PDFBox, DOCX/XLSX=POI, txt/md=UTF-8.
  * HWP/HWPX는 {@link HwpExtractor}(rhwp)가 처리(여기선 방어적 거부).
+ * <p>미지원(정직성): 이미지 OCR(스캔 PDF는 텍스트 0), 표 구조 보존(XLSX는 셀 값만 탭 구분).
+ * "이미지 OCR·표 추출"은 로드맵 항목이며 현재 코드에는 없다.
  */
 public final class DocText {
 

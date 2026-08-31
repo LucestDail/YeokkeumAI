@@ -82,8 +82,17 @@ public class ApiController {
     }
 
     @GetMapping("/api/docs")
-    public Map<String, Object> listDocs(HttpServletRequest req) {
-        return Map.of("items", rag.listDocuments());
+    public Map<String, Object> listDocs(
+            @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(defaultValue = "0") int offset,
+            HttpServletRequest req) {
+        int safeLimit = Math.max(1, Math.min(limit, 200));
+        int safeOffset = Math.max(0, offset);
+        return Map.of(
+                "items", rag.listDocuments(safeLimit, safeOffset),
+                "total", rag.countDocuments(),
+                "limit", safeLimit,
+                "offset", safeOffset);
     }
 
     /** 문서 삭제 — 오등록·PII 문서 파기(청크 포함). */
