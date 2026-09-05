@@ -78,11 +78,21 @@ public class YeokkeumProperties {
         private boolean hybrid = true;
         /** RRF(Reciprocal Rank Fusion) 상수 k. */
         private int rrfK = 60;
+        /**
+         * 한 번의 검색에 메모리로 올릴 청크 수 상한 [RAG-1].
+         *
+         * <p>검색은 BM25·코사인을 인메모리로 계산하므로 청크 전량을 적재한다.
+         * 문서가 늘면 레이턴시가 선형으로 늘고 결국 OOM 이다. 상한을 두어
+         * **죽지는 않게** 한다(넘으면 경고를 남긴다 — pgvector 로 옮길 시점의 신호).
+         */
+        private int maxChunks = 5000;
 
         public int getChunkChars() { return chunkChars; }
         public void setChunkChars(int v) { this.chunkChars = v; }
         public int getTopK() { return topK; }
         public void setTopK(int v) { this.topK = v; }
+        public int getMaxChunks() { return maxChunks; }
+        public void setMaxChunks(int v) { this.maxChunks = v; }
         public boolean isHybrid() { return hybrid; }
         public void setHybrid(boolean v) { this.hybrid = v; }
         public int getRrfK() { return rrfK; }

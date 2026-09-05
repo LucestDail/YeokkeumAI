@@ -30,6 +30,11 @@ public class HwpExtractor {
         this.props = props;
     }
 
+    /** 기동 진단용 — 어떤 바이너리를 쓸지만 알려준다(실행하지 않는다). */
+    public String resolveBinaryForDiagnostics() {
+        return resolveBinary();
+    }
+
     /** RHWP_PATH(env) > yeokkeum.doc.rhwp-path(bin/rhwp) > PATH의 "rhwp". */
     private String resolveBinary() {
         String env = System.getenv("RHWP_PATH");

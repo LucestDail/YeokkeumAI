@@ -18,7 +18,7 @@ class StartupChecksTest {
     void prodWithInsecureOpenModeFailsFast() {
         MockEnvironment env = new MockEnvironment();
         env.setActiveProfiles("prod");
-        StartupChecks sc = new StartupChecks(propsWith(true), null, env);
+        StartupChecks sc = new StartupChecks(propsWith(true), null, env, null);
         assertThatThrownBy(sc::guardInsecureOpenMode)
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("INSECURE_OPEN_MODE");
@@ -27,7 +27,7 @@ class StartupChecksTest {
     @Test
     void devWithInsecureOpenModeAllowed() {
         MockEnvironment env = new MockEnvironment(); // 프로파일 없음(dev)
-        StartupChecks sc = new StartupChecks(propsWith(true), null, env);
+        StartupChecks sc = new StartupChecks(propsWith(true), null, env, null);
         assertThatCode(sc::guardInsecureOpenMode).doesNotThrowAnyException();
     }
 }

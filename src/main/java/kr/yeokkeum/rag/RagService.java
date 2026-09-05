@@ -133,7 +133,19 @@ public class RagService {
 
     /** 하이브리드 검색: BM25 + dense(BGE-M3) 를 RRF 융합. dense 없으면 BM25 단독으로 폴백. */
     private Retrieved retrieve(String queryText, int k) {
-        List<Chunk> all = chunkRepo.findAll();
+        // [RAG-1] 청크 전량을 메모리로 올려 BM25·코사인을 계산한다 — 문서가 늘면
+        // 레이턴시가 선형으로 늘고 결국 OOM 이다. 상한을 두어 죽지는 않게 하고,
+        // 넘으면 경고를 남긴다(그때가 pgvector 로 옮길 시점이다).
+        int max = Math.max(1, props.getRag().getMaxChunks());
+        long total = chunkRepo.count();
+        List<Chunk> all = total > max
+                ? chunkRepo.findAll(org.springframework.data.domain.PageRequest.of(0, max)).getContent()
+                : chunkRepo.findAll();
+        if (total > max) {
+            log.warn("RAG 청크가 상한을 넘었다 — 최근 {}개만 검색한다(전체 {}개). "
+                    + "검색 품질이 떨어질 수 있다. yeokkeum.rag.max-chunks 를 올리거나 벡터DB 로 옮겨라.",
+                    max, total);
+        }
         if (all.isEmpty()) return Retrieved.EMPTY;
         int n = all.size();
 

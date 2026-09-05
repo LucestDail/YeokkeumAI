@@ -53,6 +53,8 @@ yeokkeum:
     top-k: ${RAG_TOP_K:5}
     hybrid: ${RAG_HYBRID:true}                       # BM25 + dense(BGE-M3) RRF 융합. 임베딩 없으면 자동 BM25 폴백
     rrf-k: ${RAG_RRF_K:60}
+    # 한 번의 검색에 메모리로 올릴 청크 상한 [RAG-1]. 넘으면 경고 로그.
+    max-chunks: ${RAG_MAX_CHUNKS:5000}
   embedding:
     provider: ${EMBEDDING_PROVIDER:auto}             # auto | openai_compat | stub
     base-url: ${EMBEDDING_BASE_URL:}                 # 예: http://<tei-host>/v1 (BGE-M3 서빙). 비면 stub
