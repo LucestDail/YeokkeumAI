@@ -1,3 +1,14 @@
+# ⚠️ 이 compose 로 띄우면 두 가지가 빠진다 (2026-09-05 확인)
+#
+#   1. KRDS Vue 프론트 — Dockerfile 에 frontend 빌드 스텝이 없다.
+#      → 데모 콘솔(static/index.html)만 뜨고 실제 UI 가 안 보인다.
+#   2. rhwp (HWP/HWPX 추출기) — Dockerfile 에 조달 스텝이 없다.
+#      → HWP 업로드가 항상 503. 기동 로그에 "HWP 추출기를 쓸 수 없다" 경고가 뜬다.
+#
+# **실배포 정본은 systemd 다**(`.25` `/opt/yeokkeum/yeokkeumai.jar` + `bin/rhwp`).
+# 이 compose 는 로컬에서 백엔드만 빠르게 띄워 볼 때 쓴다.
+# 컨테이너로 옮기려면 Dockerfile 에 위 둘을 넣어야 한다 — 절차는 `deploy/RHWP.md` 참고.
+
 services:
   ieum:
     build: .
