@@ -19,6 +19,9 @@ import kr.yeokkeum.config.YeokkeumProperties;
  */
 public class OpenAiCompatEmbeddingGateway implements EmbeddingGateway {
 
+    private static final org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger(OpenAiCompatEmbeddingGateway.class);
+
     private final YeokkeumProperties.Embedding cfg;
     private final ObjectMapper om = new ObjectMapper();
     private final HttpClient client;
@@ -44,9 +47,21 @@ public class OpenAiCompatEmbeddingGateway implements EmbeddingGateway {
     @Override
     public List<float[]> embed(List<String> inputs) {
         try {
+            /*
+             * 🔴 **임베딩도 나가는 자리다** [R3]. RAG 청크 원문이 그대로 외부로 간다 —
+             *    채팅만 막으면 반쪽이다. ⚠️응답 벡터의 개수·순서는 그대로여야 하므로
+             *    **개수를 바꾸지 않고 내용만** 가린다(아래 `data.size() != inputs.size()` 검사가 지켜본다).
+             */
+            kr.yeokkeum.common.OutboundPii.Result masked =
+                    kr.yeokkeum.common.OutboundPii.maskAll(inputs, cfg.isMaskPii());
+            if (masked.changed()) {
+                // ⚠️ 가린 내용 자체는 안 남긴다 — 그러면 마스킹한 의미가 없다
+                log.info("[pii] 임베딩으로 나가기 전 {}개 청크에서 개인정보를 가렸습니다 (전체 {}개)",
+                        masked.maskedCount(), inputs.size());
+            }
             Map<String, Object> body = new LinkedHashMap<>();
             body.put("model", cfg.getModel());
-            body.put("input", inputs);
+            body.put("input", masked.texts());
             HttpRequest.Builder req = HttpRequest.newBuilder(URI.create(url()))
                     .timeout(Duration.ofSeconds(cfg.getTimeoutSeconds()))
                     .header("Content-Type", "application/json");

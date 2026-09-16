@@ -29,7 +29,18 @@ public class YeokkeumProperties {
         private String apiKey = "";
         private String model = "deepseek/deepseek-chat";
         private int timeoutSeconds = 120;
+        /**
+         * 외부 모델로 <b>나가는</b> 텍스트에서 주민번호·전화·카드·이메일을 가릴지 [R3].
+         *
+         * <p>🔴 기본값은 <b>켜짐</b>이다 — 공공 RFP 문서에는 개인정보가 흔하고,
+         * 끄는 것은 "알고 끄는" 선택이어야 한다.
+         * <p>⚠️ 켜면 <b>모델이 그 값을 못 읽는다</b>. "계약서의 연락처가 뭐야" 같은 질문에
+         * 답을 못 하므로, 그런 용도라면 끄고 쓰되 <b>무엇이 나가는지 알고</b> 써야 한다.
+         */
+        private boolean maskPii = true;
 
+        public boolean isMaskPii() { return maskPii; }
+        public void setMaskPii(boolean v) { this.maskPii = v; }
         public String getProvider() { return provider; }
         public void setProvider(String v) { this.provider = v; }
         public String getBaseUrl() { return baseUrl; }
@@ -107,7 +118,14 @@ public class YeokkeumProperties {
         private String model = "bge-m3";
         private int timeoutSeconds = 60;
         private int stubDimension = 256;                   // stub 결정적 벡터 차원
+        /**
+         * 🔴 <b>임베딩도 외부로 텍스트를 보낸다</b> — RAG 청크 원문이 그대로 나간다.
+         * 채팅만 막으면 반쪽이라 같은 플래그를 여기에도 둔다 [R3].
+         */
+        private boolean maskPii = true;
 
+        public boolean isMaskPii() { return maskPii; }
+        public void setMaskPii(boolean v) { this.maskPii = v; }
         public String getProvider() { return provider; }
         public void setProvider(String v) { this.provider = v; }
         public String getBaseUrl() { return baseUrl; }

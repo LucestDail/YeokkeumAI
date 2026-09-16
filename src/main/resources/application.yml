@@ -39,6 +39,10 @@ yeokkeum:
     api-key: ${LLM_API_KEY:}
     model: ${LLM_MODEL:deepseek/deepseek-chat}
     timeout-seconds: ${LLM_TIMEOUT_SECONDS:120}
+    # [R3] 외부 모델로 나가기 전 주민번호·전화·카드·이메일 마스킹. 기본 켜짐.
+    # ⚠️ 끄면 문서 원문이 그대로 나간다. "계약서의 연락처가 뭐야" 같은 질문에
+    #    답이 필요하면 끄되, 무엇이 나가는지 알고 끄는 것이어야 한다.
+    mask-pii: ${LLM_MASK_PII:true}
   auth:
     admin-token: ${ADMIN_TOKEN:}
     user-token: ${USER_TOKEN:}
@@ -61,6 +65,8 @@ yeokkeum:
     api-key: ${EMBEDDING_API_KEY:}
     model: ${EMBEDDING_MODEL:bge-m3}
     timeout-seconds: ${EMBEDDING_TIMEOUT_SECONDS:60}
+    # [R3] 임베딩도 RAG 청크 원문을 외부로 보낸다 — 같은 이유로 가린다
+    mask-pii: ${EMBEDDING_MASK_PII:true}
   doc:
     rhwp-path: ${RHWP_PATH:bin/rhwp}                 # HWP/HWPX 파서(rhwp export-text). 없으면 PATH의 rhwp
     rhwp-timeout-ms: ${RHWP_TIMEOUT_MS:30000}

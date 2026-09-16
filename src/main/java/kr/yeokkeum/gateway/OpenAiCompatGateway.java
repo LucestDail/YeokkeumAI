@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import kr.yeokkeum.common.OutboundPii;
 import kr.yeokkeum.config.YeokkeumProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +53,43 @@ public class OpenAiCompatGateway implements LlmGateway {
         return b;
     }
 
+    /**
+     * 🔴 <b>여기가 외부로 나가는 유일한 길목이다</b> — {@code chat()} 과 {@code stream()} 이 둘 다 이걸 쓴다.
+     * 그래서 마스킹을 <b>여기 한 곳</b>에 건다. 호출부마다 걸면 언젠가 한 곳이 빠진다.
+     */
     private String payload(List<ChatMessage> messages, double temp, int maxTokens, boolean stream) throws Exception {
+        List<ChatMessage> outbound = maskOutbound(messages);
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("model", cfg.getModel());
-        body.put("messages", messages);
+        body.put("messages", outbound);
         body.put("temperature", temp);
         body.put("max_tokens", maxTokens);
         if (stream) body.put("stream", true);
         return om.writeValueAsString(body);
+    }
+
+    /**
+     * 나가는 메시지의 개인정보를 가린다 [R3].
+     *
+     * <p>⚠️ <b>몇 건 가렸는지 로그로 낸다</b> — 0 이면 "설정은 켰는데 실제로는 아무것도 안 가렸다" 는
+     * 뜻이고, 그걸 결과가 스스로 알려 주게 해야 "적용된 척" 이 불가능하다.
+     * <p>🔴 <b>가린 내용 자체는 로그에 쓰지 않는다.</b> 그러면 마스킹한 의미가 없다.
+     */
+    private List<ChatMessage> maskOutbound(List<ChatMessage> messages) {
+        boolean on = cfg.isMaskPii();
+        if (!on || messages == null || messages.isEmpty()) return messages;
+
+        List<String> contents = messages.stream().map(ChatMessage::content).toList();
+        OutboundPii.Result r = OutboundPii.maskAll(contents, true);
+        if (!r.changed()) return messages;
+
+        log.info("[pii] 외부 모델로 나가기 전 {}개 메시지에서 개인정보를 가렸습니다 (전체 {}개)",
+                r.maskedCount(), messages.size());
+        List<ChatMessage> out = new java.util.ArrayList<>(messages.size());
+        for (int i = 0; i < messages.size(); i++) {
+            out.add(new ChatMessage(messages.get(i).role(), r.texts().get(i)));
+        }
+        return out;
     }
 
     @Override
